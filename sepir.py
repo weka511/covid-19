@@ -24,6 +24,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
+import os
 
 # dy
 #
@@ -104,7 +105,7 @@ def aggregate(y,selector=range(7)):
 #     N     Population size (for scaling)
 #     Rc    Basic Reproduction number (for use in title)
 
-def plot_detail(t=[],y=[],N=1,Rc=1,control_days=400,R_uncontrolled=2.5): 
+def plot_detail(t=[],y=[],N=1,Rc=1,control_days=400,R_uncontrolled=2.5,out='./'): 
     plt.plot(t, scale(y[0],N=N),                             color='b',                 label='S (Susceptible)')
     plt.plot(t, scale(y[1],N=N),                             color='g',                 label='E (Exposed)')
     plt.plot(t, scale(y[2],N=N),                             color='r',                 label='P (Presymptomatic)')
@@ -120,7 +121,7 @@ def plot_detail(t=[],y=[],N=1,Rc=1,control_days=400,R_uncontrolled=2.5):
     plt.title('Progression of COVID-19: Rc = {0:.2f} for {1} days, then {2:.2f}'.format(Rc,control_days,R_uncontrolled))
     plt.grid()
     plt.axvspan(0, control_days, facecolor='b', alpha=0.125)
-    plt.savefig('{0}.png'.format(Rc))
+    plt.savefig(os.path.join(out,'{0}.png'.format(Rc)))
     
 # plot_infections
 #
@@ -130,7 +131,7 @@ def plot_detail(t=[],y=[],N=1,Rc=1,control_days=400,R_uncontrolled=2.5):
 #       infections
 #       control_days    Number of days controled (for display only)
 
-def plot_infections(infections,control_days=400):
+def plot_infections(infections,control_days=400,out='./'):
     for (Rc,t,y) in infections:
         plt.plot (t,y,label='{0:.2f}'.format(Rc))
     plt.title('Total Infections: {0} days before control lifted.'.format(control_days))
@@ -138,7 +139,7 @@ def plot_infections(infections,control_days=400):
     plt.xlabel('Days')
     plt.grid() 
     plt.axvspan(0, control_days, facecolor='b', alpha=0.125)
-    plt.savefig('totals')
+    plt.savefig(os.path.join(out,'totals'))
 
 # get_beta
 #
@@ -166,6 +167,7 @@ if __name__=='__main__':
     parser.add_argument('--CFR0',    type=float, default=1.0/100,  help='case fatality rate for cases under ICU max')
     parser.add_argument('--pICU',    type=float, default=1.25/100, help='proportion of cases requiring ICU')
     parser.add_argument('--show',                default=False,    help='Show plots at end of run', action='store_true')
+    parser.add_argument('--out',                 default='./figs', help='Pathname for output')
     args = parser.parse_args()
     
     infections = []
@@ -196,11 +198,12 @@ if __name__=='__main__':
                     N=args.N,
                     Rc=Rc,
                     control_days=args.control,
-                    R_uncontrolled=R_uncontrolled)        
+                    R_uncontrolled=R_uncontrolled,
+                    out=args.out)        
     
     if isinstance(args.Rc, list):
         plt.figure(figsize=(20,6))
-        plot_infections(infections,control_days=args.control)
+        plot_infections(infections,control_days=args.control,out=args.out)
     
     if args.show:
         plt.show()
