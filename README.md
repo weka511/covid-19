@@ -5,7 +5,7 @@ Model  spread of COVID-19
 
 | Name | Purpose |
 |--------------------|----------------------------------------------------------------------------------------------------------|
-|sir.py|My implementation of the model described in James et al|
+|sepir.py|Model of disease spread: Susceptible, Exposed, Pre-symptomatic, Infected, Recovered|
 |COVID19.wpr|Python project.|
-|README.md|This File|
+|README.md|This file|
 

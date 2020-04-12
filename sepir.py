@@ -1,4 +1,4 @@
-# sir.py
+# sepir.py
 
 # Copyright (C) 2020 Greenweaves Software Limited
 
