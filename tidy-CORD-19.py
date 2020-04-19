@@ -61,10 +61,10 @@ def create_json_dict(cord_path=cord_path):
 
     
 def link_data(metadata,papers):
-    matched     =0
+    matched     = 0
     not_matched = 0
     for paper_sha in papers.keys():
-        matches_sha = metadata.loc[metadata.sha=='paper_sha','title']
+        matches_sha = metadata.loc[metadata.sha==paper_sha,'title']
         if matches_sha.count()==1:
             matched+=1
         else:
@@ -74,7 +74,7 @@ def link_data(metadata,papers):
             else:
                 print (paper_sha)
                 not_matched+=1
-    print ('matched={0}, not_matched={1}'.format(matched, not_matched))    
+    print ('matched={0}, not_matched={1}, {2}%'.format(matched, not_matched, int(100*not_matched/(matched+not_matched))))    
     
 if __name__=='__main__':
     import argparse
