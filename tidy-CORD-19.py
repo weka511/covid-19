@@ -64,7 +64,7 @@ def link_data(metadata,papers):
     matched     =0
     not_matched = 0
     for paper_sha in papers.keys():
-        matches_sha = metadata.loc[metadata.sha.contains(paper_sha),'title']
+        matches_sha = metadata.loc[metadata.sha=='paper_sha','title']
         if matches_sha.count()==1:
             matched+=1
         else:
