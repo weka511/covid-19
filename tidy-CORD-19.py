@@ -81,7 +81,7 @@ def link_data(metadata,papers):
 # fix_semicolons
 #
 # Some metadata records have several shas concatenated - fix them
-
+#
 # Uses an idea from Suresh Sardar
 # https://medium.com/@sureshssarda/pandas-splitting-exploding-a-column-into-multiple-rows-b1b1d59ea12e
 
@@ -92,6 +92,7 @@ def fix_semicolons(metadata):
     df_split          = pd.DataFrame(df2_semicolons.sha.str.split('; ').tolist(), index=df2_semicolons.sha).stack()
     df_split          = df_split.reset_index([0, 'sha'])
     df_split.columns  = ['sha_concat', 'sha']
+    df_split.drop_duplicates(inplace=True)
     df_split          = df_split.join(df2_semicolons.set_index('sha'),on='sha_concat',how='outer')
     df_split.drop(columns='sha_concat',inplace=True)
     return pd.concat([df_plain, df_split], axis=0)
