@@ -71,7 +71,7 @@ def link_data(metadata,papers):
             matched+=1
         else:
             matches_pmcid = metadata.loc[metadata.pmcid==paper_sha,'title']
-            if matches_pmcid.count()==1:
+            if matches_pmcid.count()>0:
                 matched+=1
             else:
                 print (paper_sha)
@@ -82,7 +82,7 @@ def link_data(metadata,papers):
 #
 # Some metadata records have several shas concatenated - fix them
 #
-# Uses an idea from Suresh Sardar
+# Split sha on semicolon, using an idea from Suresh Sardar
 # https://medium.com/@sureshssarda/pandas-splitting-exploding-a-column-into-multiple-rows-b1b1d59ea12e
 
 def fix_semicolons(metadata):
