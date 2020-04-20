@@ -35,16 +35,18 @@
 # url
 
 
-import json, os, pandas as pd, re, sys
+import json, os, pandas as pd, re, sys, numpy as np
 from os.path import join
-cord_path = r'C:\CORD-19'
+from tempfile import NamedTemporaryFile
 
-def create_meta_data(metadata='metadata.csv',cord_path=cord_path):
-    product         = pd.read_csv(join(cord_path,metadata))
+
+
+def create_meta_data(metadata='metadata.csv',cord_path=''):
+    product         = pd.read_csv(join(cord_path,metadata), error_bad_lines=False, warn_bad_lines=True)
     product.columns = [re.sub('[^_a-zA-Z0-9]+','_',col) for col in product.columns]
     return product
 
-def create_json_dict(cord_path=cord_path):
+def create_json_dict(cord_path=''):
     product = {}
     for root, _, files in os.walk(cord_path):
         for name in files:
@@ -75,6 +77,26 @@ def link_data(metadata,papers):
                 print (paper_sha)
                 not_matched+=1
     print ('matched={0}, not_matched={1}, {2}%'.format(matched, not_matched, int(100*not_matched/(matched+not_matched))))    
+
+# fix_semicolons
+#
+# Some metadata records have several shas concatenated - fix them
+
+# Uses an idea from Suresh Sardar
+# https://medium.com/@sureshssarda/pandas-splitting-exploding-a-column-into-multiple-rows-b1b1d59ea12e
+
+def fix_semicolons(metadata):
+    select_semicolons = metadata.sha.str.contains(';')
+    df2_semicolons    = metadata.loc[select_semicolons,]
+    df_plain          = metadata.loc[~select_semicolons,]
+    df_split          = pd.DataFrame(df2_semicolons.sha.str.split('; ').tolist(), index=df2_semicolons.sha).stack()
+    df_split          = df_split.reset_index([0, 'sha'])
+    df_split.columns  = ['sha_concat', 'sha']
+    df_split          = df_split.join(df2_semicolons.set_index('sha'),on='sha_concat',how='outer')
+    df_split.drop(columns='sha_concat',inplace=True)
+    return pd.concat([df_plain, df_split], axis=0)
+    
+
     
 if __name__=='__main__':
     import argparse
@@ -83,10 +105,12 @@ if __name__=='__main__':
     parser.add_argument('--path', default=r'C:\CORD-19')
     parser.add_argument('--metadata', default ='metadata.csv')
     args = parser.parse_args()
-
+    
     metadata = create_meta_data(metadata=args.metadata,cord_path=args.path)
-        
+    metadata = metadata.replace(np.nan,'',regex=True)
+    
+    
     papers   = create_json_dict(cord_path=args.path)
-    link_data(metadata,papers)
+    link_data(fix_semicolons(metadata),papers)
   
     
