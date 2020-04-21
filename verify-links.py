@@ -1,4 +1,4 @@
-# parse-CORD-19.py
+# verify-links.py
 
 # Copyright (C) 2020 Greenweaves Software Limited
 
@@ -14,26 +14,26 @@
 
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
-
-# cord_uid
-# sha
-# source_x
-# title
-# doi
-# pmcid
-# pubmed_id
-# license
-# abstract
-# publish_time
-# authors
-# journal
-# Microsoft_Academic_Paper_ID
-# WHO_Covidence
-# has_pdf_parse
-# has_pmc_xml_parse
-# full_text_file
-# url
-
+#
+# Metadata fields:
+#      cord_uid
+#      sha
+#      source_x
+#      title
+#      doi
+#      pmcid
+#      pubmed_id
+#      license
+#      abstract
+#      publish_time
+#      authors
+#      journal
+#      Microsoft_Academic_Paper_ID
+#      WHO_Covidence
+#      has_pdf_parse
+#      has_pmc_xml_parse
+#      full_text_file
+#      url
 
 import json, os, pandas as pd, re, sys, numpy as np
 from os.path import join
