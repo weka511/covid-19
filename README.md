@@ -5,6 +5,7 @@ Model  spread of COVID-19
 
 | Name | Purpose |
 |--------------------|----------------------------------------------------------------------------------------------------------|
+|extract-keys.py|Extract keywords from database|
 |sepir.py|Model of disease spread: Susceptible, Exposed, Pre-symptomatic, Infected, Recovered|
 |sepir-mc.py|Monte Carlo model of disease spread: Susceptible, Exposed, Pre-symptomatic, Infected, Recovered|
 |COVID19.wpr|Python project.|
