@@ -53,12 +53,18 @@ from spacy.matcher import PhraseMatcher
 from collections import defaultdict
 from os.path import join
 
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--path', default=r'C:\CORD-19')
+parser.add_argument('--out',  default='keywords.csv')
+args  = parser.parse_args()
+
 nlp   = spacy.blank('en')
 words = defaultdict(lambda : 0)
 
-cord_path = r'C:\CORD-19'
 
-for root, _, files in os.walk(cord_path):
+for root, _, files in os.walk(args.path):
     for file_name in files:
         if file_name.endswith('.json'):
             absolute_json_file_path = join(root,file_name)
@@ -72,6 +78,10 @@ for root, _, files in os.walk(cord_path):
                         if not token.is_stop and token.lemma_.isalpha():
                             words[token.lemma_.lower()]+=1
 
-for key,value in words.items():
-    print (key,value)
+with open(args.out,'w') as out:
+    for key in sorted(list(words.keys()),reverse=True):
+        try:
+            out.write(f'{key},{words[key]}\n')
+        except UnicodeEncodeError:
+            pass
   
