@@ -79,9 +79,9 @@ for root, _, files in os.walk(args.path):
                             words[token.lemma_.lower()]+=1
 
 with open(args.out,'w') as out:
-    for key in sorted(list(words.keys()),reverse=True):
+    for key,value in sorted(list(words.items()),key = lambda x: x[1],reverse=True):
         try:
-            out.write(f'{key},{words[key]}\n')
+            out.write(f'{key},{value}\n')
         except UnicodeEncodeError:
             pass
   
