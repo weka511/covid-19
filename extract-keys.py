@@ -48,16 +48,16 @@
 #      ref_entries
 #      back_matter
 
-import json,pandas as pd, spacy, sys, os
+import json,pandas as pd, spacy, sys, os, matplotlib.pyplot as plt,math,argparse
 from spacy.matcher import PhraseMatcher
 from collections import defaultdict
 from os.path import join
 
-import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--path', default=r'C:\CORD-19')
-parser.add_argument('--out',  default='keywords.csv')
+parser = argparse.ArgumentParser('Extract keywords from json files')
+parser.add_argument('--path', default=r'C:\CORD-19', help='Path of root of json files')
+parser.add_argument('--out',  default='keywords.csv', help='Path to store keywords')
+parser.add_argument('--plot', default=False, action='store_true',help='Plot frequncies')
 args  = parser.parse_args()
 
 nlp   = spacy.blank('en')
@@ -79,9 +79,18 @@ for root, _, files in os.walk(args.path):
                             words[token.lemma_.lower()]+=1
 
 with open(args.out,'w') as out:
+    freqs=[]
     for key,value in sorted(list(words.items()),key = lambda x: x[1],reverse=True):
         try:
             out.write(f'{key},{value}\n')
+            freqs.append(math.log(value))
         except UnicodeEncodeError:
             pass
-  
+
+if args.plot:
+    plt.plot([math.log(i+1) for i in range(len(freqs))],freqs)
+    plt.title('To Zipf, or not to Zipf?')
+    plt.ylabel('Log Frequency')
+    plt.xlabel('Log Rank')
+    plt.savefig('Frequencies')
+    plt.show()
