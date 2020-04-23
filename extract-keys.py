@@ -1,3 +1,5 @@
+#extract-keys.py
+
 # Copyright (C) 2020 Greenweaves Software Limited
 
 # This is free software: you can redistribute it and/or modify
@@ -12,6 +14,9 @@
 
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Produce SCF file containing a list of all words, with a count of the 
+# number of documents in which each word occurs
 #
 # Metadata fields:
 #      cord_uid
@@ -60,35 +65,42 @@ parser.add_argument('--out',  default='keywords.csv', help='Path to store keywor
 parser.add_argument('--plot', default=False, action='store_true',help='Plot frequncies')
 args  = parser.parse_args()
 
-nlp   = spacy.blank('en')
-words = defaultdict(lambda : 0)
+nlp = spacy.blank('en')
 
+# Construct list of all words, with a count of the number of documents in which 
+# each word occurs
+
+words_with_frequencies = defaultdict(lambda : 0)
 
 for root, _, files in os.walk(args.path):
     for file_name in files:
         if file_name.endswith('.json'):
-            absolute_json_file_path = join(root,file_name)
             print (file_name)
-            with open(absolute_json_file_path) as json_file:
+            with open(join(root,file_name)) as json_file:
                 json_data = json.load(json_file)
                 for body_text_segment in json_data['body_text']:
-                    test_text = body_text_segment['text']
-                    doc       = nlp(test_text)
-                    for token in doc:
+                    for token in nlp(body_text_segment['text']):
                         if not token.is_stop and token.lemma_.isalpha():
-                            words[token.lemma_.lower()]+=1
+                            words_with_frequencies[token.lemma_.lower()]+=1
+
+# Sort in descending order by frequency
+
+word_freq_sorted = sorted(list(words_with_frequencies.items()),key = lambda x: x[1],reverse=True)
+
+# Output words and frequencies as a CSV file
 
 with open(args.out,'w') as out:
-    freqs=[]
-    for key,value in sorted(list(words.items()),key = lambda x: x[1],reverse=True):
+    for word,frequency in word_freq_sorted:
         try:
-            out.write(f'{key},{value}\n')
-            freqs.append(math.log(value))
+            out.write(f'{word},{frequency}\n')
         except UnicodeEncodeError:
             pass
 
+# Optionally Plost frequencies on a log-log scale
+
 if args.plot:
-    plt.plot([math.log(i+1) for i in range(len(freqs))],freqs)
+    plt.plot([math.log(i+1) for i in range(len(word_freq_sorted))],
+             [math.log(frequency) for _,frequency in word_freq_sorted])
     plt.title('To Zipf, or not to Zipf?')
     plt.ylabel('Log Frequency')
     plt.xlabel('Log Rank')
