@@ -15,10 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
-import sepir
+import sepir, matplotlib.pyplot as plt, random, numpy as np
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
-import random
 
 def create_NPIs(start=150,R0=2.5,lower_bound=0.9,upper_bound=1.0,dt=5):
      NPIs = []
@@ -117,10 +115,13 @@ if __name__=='__main__':
      args = parser.parse_args()
      
      random.seed(args.seed)
+     durations   = []
+     mortalities = []
      
      for i in range(args.M):
-          sols,R0s=change_R0(R0=args.R0,
-                             NPIs    = create_NPIs(),
+          sols,R0s=change_R0(t_range =(0,args.end),
+                             R0      = args.R0,
+                             NPIs    = create_NPIs(R0=args.R0),
                              initial = args.initial,
                              N       = args.N,
                              c       = args.c, 
@@ -132,12 +133,19 @@ if __name__=='__main__':
                              CFR0    = args.CFR0,  
                              nICU    = args.nICU,   
                              pICU    = args.pICU)
-          plt.figure()
-          for sol,R0 in zip(sols,R0s):
-               plt.plot(sol.t,sepir.scale(sepir.aggregate(sol.y,selector=range(3,5)),N=args.N),label=f'{R0:.3f}')
-               #print (sepir.scale(sepir.aggregate(sol.y,selector=range(5,7)),N=N))
-          deaths = int((1-sepir.aggregate(sols[-1].y,selector=range(5,7))[-1])*args.N)
-          plt.title(f'Deaths={deaths:,}')
-          plt.legend(title='R0')
+          ys = [y for sol in sols for y in sepir.scale(sepir.aggregate(sol.y,selector=range(3,5)),N=args.N)]
+          ts = [t for sol in sols for t in sol.t]
+          durations.append(ts[np.argmax(ys)]) 
+          mortalities.append((1-sepir.aggregate(sols[-1].y,selector=range(5,7))[-1])*args.N)
+
+     plt.figure()
+     plt.title('Duration and mortality')
+     ax1=plt.subplot(211)
+     ax1.hist(durations)
+     ax1.set_xlabel('Duration (days)')
+     ax2=plt.subplot(212)
+     ax2.hist(mortalities)
+     ax2.set_xlabel('Deaths')
+          
      if args.show:
           plt.show()
