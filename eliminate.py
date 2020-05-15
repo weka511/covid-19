@@ -92,10 +92,10 @@ def change_R0(R0      = 2.5,
 
 
 if __name__=='__main__':
-     import argparse
+     import argparse, os
 
-     parser = argparse.ArgumentParser('Model COVID19 evolution')
-     parser.add_argument('--M',       type=int,   default = 5,      help='Number of runs for Monte Carlo sumulation')
+     parser = argparse.ArgumentParser('Model COVID19 evolution (see Transmission T-028: Sidney Redner on exponential growth processes)')
+     parser.add_argument('--M',       type=int,   default=1000,     help='Number of runs for Monte Carlo simulation')
      parser.add_argument('--R0',      type=float, default=2.5,      help='Basic Reproduction number')
      parser.add_argument('--initial', type=int,   default=20,       help='Number of exposed people at start')
      parser.add_argument('--N',       type=int,   default=5000000,  help='Population size')
@@ -138,14 +138,14 @@ if __name__=='__main__':
           durations.append(ts[np.argmax(ys)]) 
           mortalities.append((1-sepir.aggregate(sols[-1].y,selector=range(5,7))[-1])*args.N)
 
-     plt.figure()
-     plt.title('Duration and mortality')
+     fig = plt.figure(figsize=(20,6))
+     fig.suptitle(f'Duration and mortality. M={args.M}')
      ax1=plt.subplot(211)
      ax1.hist(durations)
      ax1.set_xlabel('Duration (days)')
      ax2=plt.subplot(212)
      ax2.hist(mortalities)
      ax2.set_xlabel('Deaths')
-          
+     plt.savefig(os.path.join(args.out,'T028.png'))    
      if args.show:
           plt.show()
