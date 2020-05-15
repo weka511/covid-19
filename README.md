@@ -5,6 +5,7 @@ Model  spread of COVID-19
 
 | Name | Purpose |
 |--------------------|----------------------------------------------------------------------------------------------------------|
+|eliminate.py|Simulate effect of a few NPIs--[Transmission T-028: Sidney Redner on exponential growth processes](https://santafe.edu/news-center/news/transmission-t-028-sidney-redner-exponential-growth-processes)|
 |extract-keys.py|Extract keywords from database|
 |sepir.py|Model of disease spread: Susceptible, Exposed, Pre-symptomatic, Infected, Recovered|
 |sepir-mc.py|Monte Carlo model of disease spread: Susceptible, Exposed, Pre-symptomatic, Infected, Recovered|
