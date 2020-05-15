@@ -85,7 +85,9 @@ for root, _, files in os.walk(args.path):
 
 # Sort in descending order by frequency
 
-word_freq_sorted = sorted(list(words_with_frequencies.items()),key = lambda x: x[1],reverse=True)
+word_freq_sorted = sorted(list(words_with_frequencies.items()),
+                          key = lambda x: x[1],
+                          reverse=True)
 
 # Output words and frequencies as a CSV file
 
@@ -96,7 +98,7 @@ with open(args.out,'w') as out:
         except UnicodeEncodeError:
             pass
 
-# Optionally Plost frequencies on a log-log scale
+# Optionally plot frequencies on a log-log scale
 
 if args.plot:
     plt.plot([math.log(i+1) for i in range(len(word_freq_sorted))],
