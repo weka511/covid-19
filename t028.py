@@ -1,4 +1,4 @@
-# eliminate.py
+# t028.py
 
 # Copyright (C) 2020 Greenweaves Software Limited
 
