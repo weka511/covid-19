@@ -21,11 +21,19 @@
 # Disclaimer: the program has not been discussed with these authors; it is
 # unreviewed, and in no way endorsed by them.
 
-import numpy as np
+import numpy as np,  matplotlib.pyplot as plt, os
 from scipy.integrate import solve_ivp
-import matplotlib.pyplot as plt
-import os
+from enum import Enum
 
+class Indices(Enum):
+    SUSCEPTIBLE         = 0
+    EXPOSED             = 1
+    PRE_SYMPTOMATIC     = 2
+    INFECTIOUS_UNTESTED = 3
+    INFECTIOUS_TESTED   = 4
+    RECOVERED_UNTESTED  = 5
+    RECOVERED_TESTED    = 6
+    
 # dy
 #
 # Compute derivative of state vector

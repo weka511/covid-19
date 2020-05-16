@@ -103,26 +103,26 @@ if __name__=='__main__':
 
      parser = argparse.ArgumentParser('Model COVID19 evolution (see Transmission T-028: Sidney Redner on exponential growth processes)')
      parser.add_argument('--M',       type=int,   default=1000,     help='Number of runs for Monte Carlo simulation')
-     parser.add_argument('--R0',      type=float, default=2.5,      help='Basic Reproduction number')
-     parser.add_argument('--initial', type=int,   default=20,       help='Number of exposed people at start')
-     parser.add_argument('--N',       type=int,   default=5000000,  help='Population size')
-     parser.add_argument('--nICU',    type=int,   default=300,      help='Number of ICU beds')
-     parser.add_argument('--end',     type=int,   default=400,      help='Number of days to be simulated')
-     parser.add_argument('--c',       type=float, default=0.1,      help='Testing rate for symptomatic cases, per diem')
-     parser.add_argument('--alpha',   type=float, default=0.25,     help='E to P transition rate, per diem')
-     parser.add_argument('--gamma',   type=float, default=0.1,      help='I to R tranition, per diem')
-     parser.add_argument('--delta',   type=float, default=1.0,      help='P to I, per diem')
-     parser.add_argument('--epsilon', type=float, default=0.15,     help='Relative infectiousness')
-     parser.add_argument('--CFR1',    type=float, default=2.0/100,  help='Case Fatality Rate for cases exceeding ICU max')
-     parser.add_argument('--CFR0',    type=float, default=1.0/100,  help='Case Fatality Rate for cases under ICU max')
-     parser.add_argument('--pICU',    type=float, default=1.25/100, help='Proportion of cases requiring ICU')
-     parser.add_argument('--show',                default=False,    help='Show plots at end of run', action='store_true')
-     parser.add_argument('--out',                 default='./figs', help='Pathname for output')
-     parser.add_argument('--seed',    type=int,   default=None,     help='Seed for random number generator')
-     parser.add_argument('--start',   type=int,   default=150,      help='Start applying NPIs')
-     parser.add_argument('--dt',      type=int,   default=5,        help='Interval between NPIs')
-     parser.add_argument('--average', type=float, default=0.95,     help='Average effect of an NPI on R0')
-     
+     parser.add_argument('--R0',        type=float, default=2.5,      help='Basic Reproduction number')
+     parser.add_argument('--initial',   type=int,   default=20,       help='Number of exposed people at start')
+     parser.add_argument('--N',         type=int,   default=5000000,  help='Population size')
+     parser.add_argument('--nICU',      type=int,   default=300,      help='Number of ICU beds')
+     parser.add_argument('--end',       type=int,   default=400,      help='Number of days to be simulated')
+     parser.add_argument('--c',         type=float, default=0.1,      help='Testing rate for symptomatic cases, per diem')
+     parser.add_argument('--alpha',     type=float, default=0.25,     help='E to P transition rate, per diem')
+     parser.add_argument('--gamma',     type=float, default=0.1,      help='I to R tranition, per diem')
+     parser.add_argument('--delta',     type=float, default=1.0,      help='P to I, per diem')
+     parser.add_argument('--epsilon',   type=float, default=0.15,     help='Relative infectiousness')
+     parser.add_argument('--CFR1',      type=float, default=2.0/100,  help='Case Fatality Rate for cases exceeding ICU max')
+     parser.add_argument('--CFR0',      type=float, default=1.0/100,  help='Case Fatality Rate for cases under ICU max')
+     parser.add_argument('--pICU',      type=float, default=1.25/100, help='Proportion of cases requiring ICU')
+     parser.add_argument('--show',                  default=False,    help='Show plots at end of run', action='store_true')
+     parser.add_argument('--out',                   default='./figs', help='Pathname for output')
+     parser.add_argument('--seed',      type=int,   default=None,     help='Seed for random number generator')
+     parser.add_argument('--start',     type=int,   default=150,      help='Start applying NPIs')
+     parser.add_argument('--dt',        type=int,   default=5,        help='Interval between NPIs')
+     parser.add_argument('--average',   type=float, default=0.95,     help='Average effect of an NPI on R0')
+     parser.add_argument('--tolerance', type=float, default=1e-5,     help='Tolerance for exposed, presymptomatic and infected at end of run')
      args = parser.parse_args()
 
 #    Monte Carlo simulation
@@ -132,6 +132,7 @@ if __name__=='__main__':
      mortalities = []
      peaks       = []
      infections  = []
+     
      
      for i in range(args.M):
           sols,R0s=change_R0(t_range =(0,args.end),
@@ -152,27 +153,37 @@ if __name__=='__main__':
                              CFR0    = args.CFR0,  
                              nICU    = args.nICU,   
                              pICU    = args.pICU)
-
-#         Calculate number affected and mortality. Start by getting the last solution curve, 
-#         last point in that curve.
+          
+          #  Calculate number affected and mortality. Start by getting the last solution curve, 
+          #  last point in that curve.
           final_sequence   = sols[-1].y
           final_population = [final_sequence[j][-1]  for j in range(0,final_sequence.shape[0])]
-#         Since people progress from Exposed to either recovered of dead, the final number of susceptibles
-#         represents those who weren't affected.
-          affected         = 1 - final_population[0]
-#         Following on, anyone who was affacted either recoveres or dies, so re can compute number of deaths
-          deaths           = affected - final_population[-1]-final_population[-2]
-          mortalities.append(args.N*deaths)
-          infections.append(args.N*affected)
-
-#         We want to know when the infection peaks          
-          ys               = [y for sol in sols for y in sepir.scale(sepir.aggregate(sol.y,selector=range(3,5)),N=args.N)]
-          ts               = [t for sol in sols for t in sol.t]
-          ipeak            = np.argmax(ys)
-          peaks.append(ys[ipeak])
-          durations.append(ts[ipeak])
-
-          #mortalities.append((1-sepir.aggregate(sols[-1].y,selector=range(5,7))[-1])*args.N)
+          
+          # Make sure population has stabilized  
+          if abs(max(final_population[i] for i in [sepir.Indices.EXPOSED.value,
+                                                   sepir.Indices.PRE_SYMPTOMATIC.value,
+                                                   sepir.Indices.INFECTIOUS_UNTESTED.value,
+                                                   sepir.Indices.INFECTIOUS_TESTED.value])) < args.tolerance: 
+     #         Since people progress from Exposed to either recovered of dead, the final number of susceptibles
+     #         represents those who weren't affected.
+               affected         = 1 - final_population[sepir.Indices.SUSCEPTIBLE.value]
+     #         Following on, anyone who was affacted either recoveres or dies, so we can compute number of deaths
+               deaths           = affected - final_population[sepir.Indices.RECOVERED_UNTESTED.value] - \
+                                             final_population[sepir.Indices.RECOVERED_TESTED.value]
+               mortalities.append(args.N*deaths)
+               infections.append(args.N*affected)
+     
+     #         We want to know when the infection peaks          
+               ys    = [y for sol in sols for y in sepir.scale(sepir.aggregate(sol.y,
+                                                                               selector=[sepir.Indices.INFECTIOUS_UNTESTED.value,
+                                                                                         sepir.Indices.INFECTIOUS_TESTED.value]),
+                                                               N=args.N)]
+               ts    = [t for sol in sols for t in sol.t]
+               ipeak = np.argmax(ys)
+               peaks.append(ys[ipeak])
+               durations.append(ts[ipeak])
+          else:
+               print (f'Final population of simulation {i} outside tolerance {args.tolerance}--results discarded')
 
 #    Plot results
 
