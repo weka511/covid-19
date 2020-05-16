@@ -18,7 +18,7 @@
 import sepir, matplotlib.pyplot as plt, random, numpy as np
 from scipy.integrate import solve_ivp
 
-def create_NPIs(start=150,R0=2.5,lower_bound=0.9,upper_bound=1.0,dt=5):
+def create_NPIs(start=150, R0=2.5, lower_bound=0.9, upper_bound=1.0, dt=5):
      NPIs = []
      t = start
      while R0>=1.0:
@@ -90,7 +90,14 @@ def change_R0(R0      = 2.5,
      R0s.append(R0)
      return sols,R0s
 
+def round(x,n=1000):
+     return n*(x//n)
 
+def get_ticks(y):
+     mu = np.mean(y)
+     sigma = np.std(y)
+     return [round(min(y)),round(mu-sigma),round(mu),round(mu+sigma),round(max(y))]
+     
 if __name__=='__main__':
      import argparse, os
 
@@ -112,16 +119,28 @@ if __name__=='__main__':
      parser.add_argument('--show',                default=False,    help='Show plots at end of run', action='store_true')
      parser.add_argument('--out',                 default='./figs', help='Pathname for output')
      parser.add_argument('--seed',    type=int,   default=None,     help='Seed for random number generator')
-     args = parser.parse_args()
+     parser.add_argument('--start',   type=int,   default=150,      help='Start applying NPIs')
+     parser.add_argument('--dt',      type=int,   default=5,        help='Interval between NPIs')
+     parser.add_argument('--average', type=float, default=0.95,     help='Average effect of an NPI on R0')
      
+     args = parser.parse_args()
+
+#    Monte Carlo simulation
+
      random.seed(args.seed)
      durations   = []
      mortalities = []
+     peaks       = []
+     infections  = []
      
      for i in range(args.M):
           sols,R0s=change_R0(t_range =(0,args.end),
                              R0      = args.R0,
-                             NPIs    = create_NPIs(R0=args.R0),
+                             NPIs    = create_NPIs(R0          = args.R0,
+                                                   start       = args.start,
+                                                   lower_bound = 2*args.average-1,
+                                                   upper_bound = 1,
+                                                   dt          = args.dt),
                              initial = args.initial,
                              N       = args.N,
                              c       = args.c, 
@@ -133,19 +152,55 @@ if __name__=='__main__':
                              CFR0    = args.CFR0,  
                              nICU    = args.nICU,   
                              pICU    = args.pICU)
-          ys = [y for sol in sols for y in sepir.scale(sepir.aggregate(sol.y,selector=range(3,5)),N=args.N)]
-          ts = [t for sol in sols for t in sol.t]
-          durations.append(ts[np.argmax(ys)]) 
-          mortalities.append((1-sepir.aggregate(sols[-1].y,selector=range(5,7))[-1])*args.N)
+
+#         Calculate number affected and mortality. Start by getting the last solution curve, 
+#         last point in that curve.
+          final_sequence   = sols[-1].y
+          final_population = [final_sequence[j][-1]  for j in range(0,final_sequence.shape[0])]
+#         Since people progress from Exposed to either recovered of dead, the final number of susceptibles
+#         represents those who weren't affected.
+          affected         = 1 - final_population[0]
+#         Following on, anyone who was affacted either recoveres or dies, so re can compute number of deaths
+          deaths           = affected - final_population[-1]-final_population[-2]
+          mortalities.append(args.N*deaths)
+          infections.append(args.N*affected)
+
+#         We want to know when the infection peaks          
+          ys               = [y for sol in sols for y in sepir.scale(sepir.aggregate(sol.y,selector=range(3,5)),N=args.N)]
+          ts               = [t for sol in sols for t in sol.t]
+          ipeak            = np.argmax(ys)
+          peaks.append(ys[ipeak])
+          durations.append(ts[ipeak])
+
+          #mortalities.append((1-sepir.aggregate(sols[-1].y,selector=range(5,7))[-1])*args.N)
+
+#    Plot results
 
      fig = plt.figure(figsize=(20,6))
-     fig.suptitle(f'Duration and mortality. M={args.M}')
-     ax1=plt.subplot(211)
+     fig.suptitle(f'Duration and mortality: M={args.M}, average={args.average}')
+     
+     ax1 = plt.subplot(221)
      ax1.hist(durations)
-     ax1.set_xlabel('Duration (days)')
-     ax2=plt.subplot(212)
+     ax1.set_xlabel('Time to peak (days)')
+     
+     ax2 = plt.subplot(222)
      ax2.hist(mortalities)
      ax2.set_xlabel('Deaths')
-     plt.savefig(os.path.join(args.out,'T028.png'))    
+     ax2.set_xticks(get_ticks(mortalities))
+     
+     ax3 = plt.subplot(223)
+     ax3.hist(peaks)
+     ax3.set_xlabel('Peak infections')
+     ax3.set_xticks(get_ticks(peaks))
+     
+     ax4 = plt.subplot(224)
+     ax4.hist(infections)
+     ax4.set_xlabel('Infections')
+     ax4.set_xticks(get_ticks(infections))     
+     
+     plt.savefig(os.path.join(args.out,'T028.png'))   
+     
+#    decide whether to display
+
      if args.show:
           plt.show()
