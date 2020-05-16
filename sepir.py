@@ -153,19 +153,19 @@ if __name__=='__main__':
     
     parser = argparse.ArgumentParser('Model COVID19 evolution')
     parser.add_argument('--Rc',      type=float, default=2.5,      help='Basic Reproduction number', nargs='+')
-    parser.add_argument('--seed',    type=int,   default=20,       help='Number of exposed people at start')
+    parser.add_argument('--initial', type=int,   default=20,       help='Number of exposed people at start')
     parser.add_argument('--N',       type=int,   default=5000000,  help='Population size')
     parser.add_argument('--nICU',    type=int,   default=300,      help='Number of ICU beds')
     parser.add_argument('--control', type=int,   default=400,      help='Number of controlled days to be simulated')
     parser.add_argument('--end',     type=int,   default=800,      help='Number of days to be simulated')
-    parser.add_argument('--c',       type=float, default=0.1,      help='testing rate for symptomatic cases, per diem')
+    parser.add_argument('--c',       type=float, default=0.1,      help='Testing rate for symptomatic cases, per diem')
     parser.add_argument('--alpha',   type=float, default=0.25,     help='E to P transition rate, per diem')
     parser.add_argument('--gamma',   type=float, default=0.1,      help='I to R tranition, per diem')
     parser.add_argument('--delta',   type=float, default=1.0,      help='P to I, per diem')
-    parser.add_argument('--epsilon', type=float, default=0.15,     help='relative infectiousness')
-    parser.add_argument('--CFR1',    type=float, default=2.0/100,  help='case fatality rate with cases exceeding ICU max')
-    parser.add_argument('--CFR0',    type=float, default=1.0/100,  help='case fatality rate for cases under ICU max')
-    parser.add_argument('--pICU',    type=float, default=1.25/100, help='proportion of cases requiring ICU')
+    parser.add_argument('--epsilon', type=float, default=0.15,     help='Relative infectiousness')
+    parser.add_argument('--CFR1',    type=float, default=2.0/100,  help='Case Fatality Rate with cases exceeding ICU max')
+    parser.add_argument('--CFR0',    type=float, default=1.0/100,  help='Case Fatality Rate for cases under ICU max')
+    parser.add_argument('--pICU',    type=float, default=1.25/100, help='Proportion of cases requiring ICU')
     parser.add_argument('--show',                default=False,    help='Show plots at end of run', action='store_true')
     parser.add_argument('--out',                 default='./figs', help='Pathname for output')
     args = parser.parse_args()
@@ -175,7 +175,7 @@ if __name__=='__main__':
     for Rc in args.Rc if isinstance(args.Rc, list) else [args.Rc]:
         sol    = solve_ivp(dy, 
                            (0,args.control),
-                           [1-args.seed/args.N, args.seed/args.N, 0, 0, 0, 0, 0],
+                           [1-args.initial/args.N, args.initial/args.N, 0, 0, 0, 0, 0],
                            args=(args.N, args.c, args.alpha,
                                  get_beta(R0=Rc,gamma=args.gamma,delta=args.delta,epsilon=args.epsilon),
                                  args.gamma, args.delta, args.epsilon, args.CFR1, args.CFR0, args.nICU, args.pICU))
