@@ -18,6 +18,11 @@
 import sepir, matplotlib.pyplot as plt, random, numpy as np
 from scipy.integrate import solve_ivp
 
+# create_NPIs
+#
+# Create a list of random reductions in R0, to be applied over a random set of (near) dates,
+# which have the cumulative effect of reducing R0 below 1.
+
 def create_NPIs(start=150, R0=2.5, lower_bound=0.9, upper_bound=1.0, dt=5):
      NPIs = []
      t = start
@@ -27,40 +32,53 @@ def create_NPIs(start=150, R0=2.5, lower_bound=0.9, upper_bound=1.0, dt=5):
           R0 *= factor
           t += random.randint(1,dt)
      return NPIs
-          
+
+# evolve
+#
+# Evolve the state forward for a fixed time interval using fixed R0
+
 def evolve(t0,t1,y,
-           R0      = 2.5,
-           N       = 5000000, 
-           c       = 0.1, 
-           alpha   = 0.25,   
-           gamma   = 0.1,  
-           delta   = 1,   
-           epsilon = 0.15, 
-           CFR1    = 2.0/100,  
-           CFR0    = 1.0/100,  
-           nICU    = 300,   
-           pICU    = 1.25/100 ):
+           R0      = 2.5,      # Basic Reproduction number
+           N       = 5000000,  # Population size
+           c       = 0.1,      # Testing rate for symptomatic cases, per diem
+           alpha   = 0.25,     # E to P transition rate, per diem 
+           gamma   = 0.1,      # I to R transition, per diem
+           delta   = 1,        # P to I, per diem
+           epsilon = 0.15,     # relative infectiousness
+           CFR1    = 2.0/100,  # case fatality rate for cases exceedinging ICU max 
+           CFR0    = 1.0/100,  # case fatality rate for cases under ICU max
+           nICU    = 300,      # number of ICU beds
+           pICU    = 1.25/100, # proportion of cases requiring ICU
+           atol    = 1e-7):    # Maximum absolute error tolerance for ODE solver
      return solve_ivp(sepir.dy, 
                      (t0,t1),
                      y,
                      args=(N, c, alpha,
                            sepir.get_beta(R0=R0,gamma=gamma,delta=delta,epsilon=epsilon),
-                           gamma, delta, epsilon, CFR1, CFR0, nICU, pICU))
+                           gamma, delta, epsilon, CFR1, CFR0, nICU, pICU),
+                     atol=atol)
 
-def change_R0(R0      = 2.5,
-              t_range = (0,400),
-              NPIs    = [(145,0.7),(150,0.8),(155,0.9),(160,0.75)],
-              N       = 5000000,
-              initial = 20,
-              c       = 0.1, 
-              alpha   = 0.25,   
-              gamma   = 0.1,  
-              delta   = 1,   
-              epsilon = 0.15, 
-              CFR1    = 2.0/100,  
-              CFR0    = 1.0/100,  
-              nICU    = 300,   
-              pICU    = 1.25/100):
+# change_R0
+#
+# Evolve the state forward for a fixed time interval varying R0 by applying a series of NPIs 
+def change_R0(R0      = 2.5,      # Initial value of Basic Reproduction number
+              t_range = (0,400),  # Range of times (days)
+              NPIs    = [],       # List od reductions to apply to R0 [(t1,f1),(t2,f2),...]
+                                  # Apply factor f1 at time t1, etc.
+              N       = 5000000,  # Population size
+              initial = 20,       # Initial number exposed
+              c       = 0.1,      # Testing rate for symptomatic cases, per diem
+              alpha   = 0.25,     # E to P transition rate, per diem 
+              gamma   = 0.1,      # I to R transition, per diem
+              delta   = 1,        # P to I, per diem
+              epsilon = 0.15,     # relative infectiousness
+              CFR1    = 2.0/100,  # case fatality rate for cases exceedinging ICU max 
+              CFR0    = 1.0/100,  # case fatality rate for cases under ICU max
+              nICU    = 300,      # number of ICU beds
+              pICU    = 1.25/100, # proportion of cases requiring ICU
+              atol    = 1e-7):    # Maximum absolute error tolerance for ODE solver 
+     
+     # First evolve solution until it is time to apply the first NPI
      t0 = t_range[0]
      t1 = NPIs[0][0]
      sols = [evolve(t0,t1,
@@ -75,54 +93,100 @@ def change_R0(R0      = 2.5,
                     CFR1    = CFR1,  
                     CFR0    = CFR0,  
                     nICU    = nICU,   
-                    pICU    = pICU)]
+                    pICU    = pICU,
+                    atol    = atol)]
+     # Now process each NPI in turn
      R0s  = [R0]
      for i in range(len(NPIs)-1):
           t0 = t1
           t1 = NPIs[i+1][0]
           R0*= NPIs[i][1]
-          sols.append(evolve(t0,t1,[y[-1] for y in sols[-1].y],R0=R0,gamma=gamma,delta=delta,epsilon=epsilon))
+          sols.append(evolve(t0,t1,
+                             [y[-1] for y in sols[-1].y],
+                             R0      = R0,
+                             N       = N, 
+                             c       = c, 
+                             alpha   = alpha,   
+                             gamma   = gamma,  
+                             delta   = delta,   
+                             epsilon = epsilon, 
+                             CFR1    = CFR1,  
+                             CFR0    = CFR0,  
+                             nICU    = nICU,   
+                             pICU    = pICU,
+                             atol    = atol))
           R0s.append(R0)
+     # Now we are at the end of NPEs, keep going with final R0     
      t0 = t1
      t1 = t_range[1]
      R0*= NPIs[len(NPIs)-1][1]
-     sols.append(evolve(t0,t1,[y[-1] for y in sols[-1].y],R0=R0,gamma=gamma,delta=delta,epsilon=epsilon))
+     sols.append(evolve(t0,t1,
+                        [y[-1] for y in sols[-1].y],
+                        R0      = R0,
+                        N       = N, 
+                        c       = c, 
+                        alpha   = alpha,   
+                        gamma   = gamma,  
+                        delta   = delta,   
+                        epsilon = epsilon, 
+                        CFR1    = CFR1,  
+                        CFR0    = CFR0,  
+                        nICU    = nICU,   
+                        pICU    = pICU,
+                        atol    = atol))
      R0s.append(R0)
+
      return sols,R0s
+
+# round
+#
+# Round number for display, e.g. to nearest thousand
 
 def round(x,n=1000):
      return n*(x//n)
 
+# get_ticks
+#
+# Used to etablish ticks for plot: max/min, mean, mean+/- sigma
 def get_ticks(y):
-     mu = np.mean(y)
+     mu    = np.mean(y)
      sigma = np.std(y)
      return [round(min(y)),round(mu-sigma),round(mu),round(mu+sigma),round(max(y))]
-     
+
+# Get coefficient of variation
+
+def get_cv(y):
+     return np.std(y)/np.mean(y)
+
 if __name__=='__main__':
      import argparse, os
 
      parser = argparse.ArgumentParser('Model COVID19 evolution (see Transmission T-028: Sidney Redner on exponential growth processes)')
-     parser.add_argument('--M',       type=int,   default=1000,     help='Number of runs for Monte Carlo simulation')
-     parser.add_argument('--R0',        type=float, default=2.5,      help='Basic Reproduction number')
-     parser.add_argument('--initial',   type=int,   default=20,       help='Number of exposed people at start')
-     parser.add_argument('--N',         type=int,   default=5000000,  help='Population size')
-     parser.add_argument('--nICU',      type=int,   default=300,      help='Number of ICU beds')
-     parser.add_argument('--end',       type=int,   default=400,      help='Number of days to be simulated')
-     parser.add_argument('--c',         type=float, default=0.1,      help='Testing rate for symptomatic cases, per diem')
-     parser.add_argument('--alpha',     type=float, default=0.25,     help='E to P transition rate, per diem')
-     parser.add_argument('--gamma',     type=float, default=0.1,      help='I to R tranition, per diem')
-     parser.add_argument('--delta',     type=float, default=1.0,      help='P to I, per diem')
-     parser.add_argument('--epsilon',   type=float, default=0.15,     help='Relative infectiousness')
-     parser.add_argument('--CFR1',      type=float, default=2.0/100,  help='Case Fatality Rate for cases exceeding ICU max')
-     parser.add_argument('--CFR0',      type=float, default=1.0/100,  help='Case Fatality Rate for cases under ICU max')
-     parser.add_argument('--pICU',      type=float, default=1.25/100, help='Proportion of cases requiring ICU')
-     parser.add_argument('--show',                  default=False,    help='Show plots at end of run', action='store_true')
-     parser.add_argument('--out',                   default='./figs', help='Pathname for output')
-     parser.add_argument('--seed',      type=int,   default=None,     help='Seed for random number generator')
-     parser.add_argument('--start',     type=int,   default=150,      help='Start applying NPIs')
-     parser.add_argument('--dt',        type=int,   default=5,        help='Interval between NPIs')
-     parser.add_argument('--average',   type=float, default=0.95,     help='Average effect of an NPI on R0')
-     parser.add_argument('--tolerance', type=float, default=1e-5,     help='Tolerance for exposed, presymptomatic and infected at end of run')
+     parser.add_argument('--M',         type=int,   default=1000,       help='Number of runs for Monte Carlo simulation')
+     parser.add_argument('--R0',        type=float, default=2.5,        help='Initial value of Basic Reproduction number. This will be reduced to below 1.0 by applying NPIs.')
+     parser.add_argument('--initial',   type=int,   default=20,         help='Number of exposed people at start of simulation.')
+     parser.add_argument('--N',         type=int,   default=5000000,    help='Population size.')
+     parser.add_argument('--nICU',      type=int,   default=300,        help='Number of ICU beds.')
+     parser.add_argument('--end',       type=int,   default=400,        help='Number of days to be simulated.')
+     parser.add_argument('--c',         type=float, default=0.1,        help='Testing rate for symptomatic cases, per diem.')
+     parser.add_argument('--alpha',     type=float, default=0.25,       help='E to P transition rate, per diem.')
+     parser.add_argument('--gamma',     type=float, default=0.1,        help='I to R tranition, per diem.')
+     parser.add_argument('--delta',     type=float, default=1.0,        help='P to I, per diem.')
+     parser.add_argument('--epsilon',   type=float, default=0.15,       help='Relative infectiousness.')
+     parser.add_argument('--CFR1',      type=float, default=2.0/100,    help='Case Fatality Rate for cases exceeding ICU max.')
+     parser.add_argument('--CFR0',      type=float, default=1.0/100,    help='Case Fatality Rate for cases under ICU max.')
+     parser.add_argument('--pICU',      type=float, default=1.25/100,   help='Proportion of cases requiring ICU.')
+     parser.add_argument('--show',                  default=False,      help='Show plots at end of run.', action='store_true')
+     parser.add_argument('--out',                   default='./figs',   help='Pathname for plot file.')
+     parser.add_argument('--plot',                  default='T028.png', help='Plot file name.')
+     parser.add_argument('--seed',      type=int,   default=None,       help='Seed for random number generator.')
+     parser.add_argument('--start',     type=int,   default=150,        help='Start applying NPIs.')
+     parser.add_argument('--dt',        type=int,   default=5,          help='Average interval between NPIs.')
+     parser.add_argument('--average',   type=float, default=0.95,       help='Average effect of an NPI on R0.')
+     parser.add_argument('--tolerance', type=float, default=1e-6,       help='Tolerance for exposed, presymptomatic and '
+                                                                           'infected at end of run. If any of these exceed'
+                                                                           ' tolerance, run will be discarded from plots.')
+     parser.add_argument('--atol',      type=float, default=1e-9,      help='Absolute tolerance for ode solver')
      args = parser.parse_args()
 
 #    Monte Carlo simulation
@@ -132,8 +196,7 @@ if __name__=='__main__':
      mortalities = []
      peaks       = []
      infections  = []
-     
-     
+         
      for i in range(args.M):
           sols,R0s=change_R0(t_range =(0,args.end),
                              R0      = args.R0,
@@ -141,7 +204,7 @@ if __name__=='__main__':
                                                    start       = args.start,
                                                    lower_bound = 2*args.average-1,
                                                    upper_bound = 1,
-                                                   dt          = args.dt),
+                                                   dt          = 2*args.dt),
                              initial = args.initial,
                              N       = args.N,
                              c       = args.c, 
@@ -152,7 +215,8 @@ if __name__=='__main__':
                              CFR1    = args.CFR1,  
                              CFR0    = args.CFR0,  
                              nICU    = args.nICU,   
-                             pICU    = args.pICU)
+                             pICU    = args.pICU,
+                             atol    = args.atol)
           
           #  Calculate number affected and mortality. Start by getting the last solution curve, 
           #  last point in that curve.
@@ -164,14 +228,17 @@ if __name__=='__main__':
                                                    sepir.Indices.PRE_SYMPTOMATIC.value,
                                                    sepir.Indices.INFECTIOUS_UNTESTED.value,
                                                    sepir.Indices.INFECTIOUS_TESTED.value])) < args.tolerance: 
-     #         Since people progress from Exposed to either recovered of dead, the final number of susceptibles
-     #         represents those who weren't affected.
+               
+     #         Since people progress from Exposed to either Recovered or Dead, the final number of Susceptibles
+     #         represents those who weren't affected at all.
                affected         = 1 - final_population[sepir.Indices.SUSCEPTIBLE.value]
-     #         Following on, anyone who was affacted either recoveres or dies, so we can compute number of deaths
-               deaths           = affected - final_population[sepir.Indices.RECOVERED_UNTESTED.value] - \
-                                             final_population[sepir.Indices.RECOVERED_TESTED.value]
-               mortalities.append(args.N*deaths)
                infections.append(args.N*affected)
+               
+     #         Following on, anyone who was affected either recoveres or dies, so we can compute number of deaths
+               deaths           = affected - final_population[sepir.Indices.RECOVERED_UNTESTED.value] - \
+                                             final_population[sepir.Indices.RECOVERED_TESTED.value]          
+               mortalities.append(args.N*deaths)
+
      
      #         We want to know when the infection peaks          
                ys    = [y for sol in sols for y in sepir.scale(sepir.aggregate(sol.y,
@@ -183,7 +250,7 @@ if __name__=='__main__':
                peaks.append(ys[ipeak])
                durations.append(ts[ipeak])
           else:
-               print (f'Final population of simulation {i} outside tolerance {args.tolerance}--results discarded')
+               print (f'Final population of simulation {i} outside tolerance {args.tolerance}: results discarded.')
 
 #    Plot results
 
@@ -191,25 +258,25 @@ if __name__=='__main__':
      fig.suptitle(f'Duration and mortality: M={args.M}, average={args.average}')
      
      ax1 = plt.subplot(221)
-     ax1.hist(durations)
-     ax1.set_xlabel('Time to peak (days)')
+     ax1.hist(durations,color='c')
+     ax1.set_xlabel(f'Time to peak (days): CV={get_cv(durations):.2}')
      
      ax2 = plt.subplot(222)
-     ax2.hist(mortalities)
-     ax2.set_xlabel('Deaths')
+     ax2.hist(mortalities,color='c')
+     ax2.set_xlabel(f'Deaths: CV={get_cv(mortalities):.2}')
      ax2.set_xticks(get_ticks(mortalities))
      
      ax3 = plt.subplot(223)
-     ax3.hist(peaks)
-     ax3.set_xlabel('Peak infections')
+     ax3.hist(peaks,color='c')
+     ax3.set_xlabel(f'Peak infections: CV={get_cv(peaks):.2}')
      ax3.set_xticks(get_ticks(peaks))
      
      ax4 = plt.subplot(224)
-     ax4.hist(infections)
-     ax4.set_xlabel('Infections')
+     ax4.hist(infections,color='c')
+     ax4.set_xlabel(f'Infections: CV={get_cv(infections):.2}')
      ax4.set_xticks(get_ticks(infections))     
      
-     plt.savefig(os.path.join(args.out,'T028.png'))   
+     plt.savefig(os.path.join(args.out, args.plot))   
      
 #    decide whether to display
 

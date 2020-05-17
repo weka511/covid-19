@@ -52,10 +52,10 @@ class Indices(Enum):
 #    c       Testing rate for symptomatic cases, per diem
 #    alpha   E to P transition rate, per diem
 #    beta    transmission coefficient, per diem  
-#    gamma   I to R tranition, per diem
+#    gamma   I to R transition, per diem
 #    delta   P to I, per diem
 #    epsilon relative infectiousness
-#    CFR1    case fatality rate with cases exceedinging ICU max
+#    CFR1    case fatality rate for cases exceedinging ICU max
 #    CFR0    case fatality rate for cases under ICU max
 #    nICU    number of ICU beds
 #    pICU    proportion of cases requiring ICU
