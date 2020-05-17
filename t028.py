@@ -187,6 +187,7 @@ if __name__=='__main__':
                                                                            'infected at end of run. If any of these exceed'
                                                                            ' tolerance, run will be discarded from plots.')
      parser.add_argument('--atol',      type=float, default=1e-9,      help='Absolute tolerance for ode solver')
+     parser.add_argument('--details',               default=False,     help='Produce detailed plots for debugging', action='store_true')
      args = parser.parse_args()
 
 #    Monte Carlo simulation
@@ -249,6 +250,12 @@ if __name__=='__main__':
                ipeak = np.argmax(ys)
                peaks.append(ys[ipeak])
                durations.append(ts[ipeak])
+               if args.details:
+                    plt.figure(figsize=(20,6))
+                    for i in range(len(sepir.Indices)):
+                         ys = [sol.y[i][j] for sol in sols for j in range(len(sol.t))]
+                         plt.plot(ts,ys,label=f'{i}')
+                    plt.legend()
           else:
                print (f'Final population of simulation {i} outside tolerance {args.tolerance}: results discarded.')
 
@@ -279,6 +286,6 @@ if __name__=='__main__':
      plt.savefig(os.path.join(args.out, args.plot))   
      
 #    decide whether to display
-
-     if args.show:
+#    We will always display if --details specified
+     if args.show or args.details:
           plt.show()
