@@ -164,7 +164,7 @@ def get_ticks(y):
 def get_cv(y):
      return np.std(y)/np.mean(y)
 
-def plot_details(sols,out='./figs',plot='details.png',indices=[3,4]):
+def plot_details(sols,out='./figs',plot='details.png',indices=range(len(sepir.Indices))):
      plt.figure(figsize=(20,6))
      for i in indices:
           plt.plot([t for sol in sols for t in sol.t],
@@ -213,7 +213,6 @@ if __name__=='__main__':
 
      random.seed(args.seed)
      durations   = []
-     mortalities = []
      peaks       = []
      infections  = []
          
@@ -239,8 +238,8 @@ if __name__=='__main__':
                              atol    = args.atol,
                              rtol    = args.rtol)
           
-          #  Calculate number affected and mortality. Start by getting the last solution curve, 
-          #  last point in that curve.
+          #  Calculate number affected. Start by getting the last solution curve, 
+          #  and the last point in that curve.
           final_sequence   = sols[-1].y
           final_population = [final_sequence[j][-1]  for j in range(0,final_sequence.shape[0])]
           
@@ -252,16 +251,11 @@ if __name__=='__main__':
                
      #         Since people progress from Exposed to either Recovered or Dead, the final number of Susceptibles
      #         represents those who weren't affected at all.
-               affected         = 1 - final_population[sepir.Indices.SUSCEPTIBLE.value]
-               infections.append(args.N*affected)
-               
-     #         Following on, anyone who was affected either recoveres or dies, so we can compute number of deaths
-               deaths           = affected - final_population[sepir.Indices.RECOVERED_UNTESTED.value] - \
-                                             final_population[sepir.Indices.RECOVERED_TESTED.value]          
-               mortalities.append(args.N*deaths)
-
-     
-     #         We want to know when the infection peaks          
+               infections.append(args.N*(1 - final_population[sepir.Indices.SUSCEPTIBLE.value]))
+               if infections[-1]<0:
+                    print (f'Negative value {infections[-1]} in step {i}')
+                    plot_details(sols,plot=f'infections{i}.png')
+        #         We want to know when the infection peaks          
                ys    = [y for sol in sols for y in sepir.scale(sepir.aggregate(sol.y,
                                                                                selector=[sepir.Indices.INFECTIOUS_UNTESTED.value,
                                                                                          sepir.Indices.INFECTIOUS_TESTED.value]),
@@ -269,7 +263,12 @@ if __name__=='__main__':
                ts    = [t for sol in sols for t in sol.t]
                ipeak = np.argmax(ys)
                peaks.append(ys[ipeak])
+               if ys[ipeak]<0:
+                    print (f'Negative  peak {ys[ipeak]} in step {i}')
+                    plot_details(sols,plot=f'peak{i}.png',indices=[3,4]) 
+                    
                durations.append(ts[ipeak])
+                   
                if args.details!=None:
                     plot_details(sols,out=args.out,plot=f'details{i}.png',indices=args.details)
           else:
@@ -278,26 +277,21 @@ if __name__=='__main__':
 #    Plot results
 
      fig = plt.figure(figsize=(20,6))
-     fig.suptitle(f'Duration and mortality: M={args.M}, average={args.average}')
+     fig.suptitle(f'Duration and Infections: M={args.M}, average={args.average}')
      
      ax1 = plt.subplot(221)
      ax1.hist(durations,color='c')
      ax1.set_xlabel(f'Time to peak (days): CV={get_cv(durations):.2}')
      
-     #ax2 = plt.subplot(222)
-     #ax2.hist(mortalities,color='c')
-     #ax2.set_xlabel(f'Deaths: CV={get_cv(mortalities):.2}')
-     #ax2.set_xticks(get_ticks(mortalities))
+     ax2 = plt.subplot(222)
+     ax2.hist(peaks,color='c')
+     ax2.set_xlabel(f'Peak infections: CV={get_cv(peaks):.2}')
+     ax2.set_xticks(get_ticks(peaks))
      
      ax3 = plt.subplot(223)
-     ax3.hist(peaks,color='c')
-     ax3.set_xlabel(f'Peak infections: CV={get_cv(peaks):.2}')
-     ax3.set_xticks(get_ticks(peaks))
-     
-     ax4 = plt.subplot(224)
-     ax4.hist(infections,color='c')
-     ax4.set_xlabel(f'Infections: CV={get_cv(infections):.2}')
-     ax4.set_xticks(get_ticks(infections))     
+     ax3.hist(infections,color='c')
+     ax3.set_xlabel(f'Infections: CV={get_cv(infections):.2}')
+     ax3.set_xticks(get_ticks(infections))     
      
      plt.savefig(os.path.join(args.out, args.plot))   
      
