@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
-import sepir, matplotlib.pyplot as plt, random, numpy as np
+import sepir, matplotlib.pyplot as plt, random, numpy as np, argparse, os
 from scipy.integrate import solve_ivp
 
 # create_NPIs
@@ -49,14 +49,16 @@ def evolve(t0,t1,y,
            CFR0    = 1.0/100,  # case fatality rate for cases under ICU max
            nICU    = 300,      # number of ICU beds
            pICU    = 1.25/100, # proportion of cases requiring ICU
-           atol    = 1e-7):    # Maximum absolute error tolerance for ODE solver
+           atol    = 1e-7,
+           rtol    = 1e-7):    # Maximum absolute error tolerance for ODE solver
      return solve_ivp(sepir.dy, 
                      (t0,t1),
                      y,
                      args=(N, c, alpha,
                            sepir.get_beta(R0=R0,gamma=gamma,delta=delta,epsilon=epsilon),
                            gamma, delta, epsilon, CFR1, CFR0, nICU, pICU),
-                     atol=atol)
+                     atol=atol,
+                     rtol=rtol)
 
 # change_R0
 #
@@ -75,7 +77,8 @@ def change_R0(R0      = 2.5,      # Initial value of Basic Reproduction number
               CFR1    = 2.0/100,  # case fatality rate for cases exceedinging ICU max 
               CFR0    = 1.0/100,  # case fatality rate for cases under ICU max
               nICU    = 300,      # number of ICU beds
-              pICU    = 1.25/100, # proportion of cases requiring ICU
+              pICU    = 1.25/100, # proportion of cases requiring ICU7
+              rtol    = 1e-7,
               atol    = 1e-7):    # Maximum absolute error tolerance for ODE solver 
      
      # First evolve solution until it is time to apply the first NPI
@@ -94,7 +97,8 @@ def change_R0(R0      = 2.5,      # Initial value of Basic Reproduction number
                     CFR0    = CFR0,  
                     nICU    = nICU,   
                     pICU    = pICU,
-                    atol    = atol)]
+                    atol    = atol,
+                    rtol    = rtol)]
      # Now process each NPI in turn
      R0s  = [R0]
      for i in range(len(NPIs)-1):
@@ -114,7 +118,8 @@ def change_R0(R0      = 2.5,      # Initial value of Basic Reproduction number
                              CFR0    = CFR0,  
                              nICU    = nICU,   
                              pICU    = pICU,
-                             atol    = atol))
+                             atol    = atol,
+                             rtol    = rtol))
           R0s.append(R0)
      # Now we are at the end of NPEs, keep going with final R0     
      t0 = t1
@@ -133,7 +138,8 @@ def change_R0(R0      = 2.5,      # Initial value of Basic Reproduction number
                         CFR0    = CFR0,  
                         nICU    = nICU,   
                         pICU    = pICU,
-                        atol    = atol))
+                        atol    = atol,
+                        rtol    = rtol))
      R0s.append(R0)
 
      return sols,R0s
@@ -158,9 +164,18 @@ def get_ticks(y):
 def get_cv(y):
      return np.std(y)/np.mean(y)
 
-if __name__=='__main__':
-     import argparse, os
-
+def plot_details(sols,out='./figs',plot='details.png',indices=[3,4]):
+     plt.figure(figsize=(20,6))
+     for i in indices:
+          plt.plot([t for sol in sols for t in sol.t],
+                   [sol.y[i][j] for sol in sols for j in range(len(sol.t))],
+                   label=sepir.names[i])
+     plt.legend() 
+     plt.savefig(os.path.join(out, plot))
+    
+     plt.close()
+     
+def parse_args():
      parser = argparse.ArgumentParser('Model COVID19 evolution (see Transmission T-028: Sidney Redner on exponential growth processes)')
      parser.add_argument('--M',         type=int,   default=1000,       help='Number of runs for Monte Carlo simulation')
      parser.add_argument('--R0',        type=float, default=2.5,        help='Initial value of Basic Reproduction number. This will be reduced to below 1.0 by applying NPIs.')
@@ -187,9 +202,13 @@ if __name__=='__main__':
                                                                            'infected at end of run. If any of these exceed'
                                                                            ' tolerance, run will be discarded from plots.')
      parser.add_argument('--atol',      type=float, default=1e-9,      help='Absolute tolerance for ode solver')
-     parser.add_argument('--details',               default=False,     help='Produce detailed plots for debugging', action='store_true')
-     args = parser.parse_args()
+     parser.add_argument('--rtol',      type=float, default=1e-9,      help='relative tolerance for ode solver')
+     parser.add_argument('--details',   type=int,   default=None,      help='Produce detailed plots for debugging', nargs='+')
+     return parser.parse_args()
 
+if __name__=='__main__':
+      
+     args=parse_args()
 #    Monte Carlo simulation
 
      random.seed(args.seed)
@@ -217,7 +236,8 @@ if __name__=='__main__':
                              CFR0    = args.CFR0,  
                              nICU    = args.nICU,   
                              pICU    = args.pICU,
-                             atol    = args.atol)
+                             atol    = args.atol,
+                             rtol    = args.rtol)
           
           #  Calculate number affected and mortality. Start by getting the last solution curve, 
           #  last point in that curve.
@@ -250,12 +270,8 @@ if __name__=='__main__':
                ipeak = np.argmax(ys)
                peaks.append(ys[ipeak])
                durations.append(ts[ipeak])
-               if args.details:
-                    plt.figure(figsize=(20,6))
-                    for i in range(len(sepir.Indices)):
-                         ys = [sol.y[i][j] for sol in sols for j in range(len(sol.t))]
-                         plt.plot(ts,ys,label=f'{i}')
-                    plt.legend()
+               if args.details!=None:
+                    plot_details(sols,out=args.out,plot=f'details{i}.png',indices=args.details)
           else:
                print (f'Final population of simulation {i} outside tolerance {args.tolerance}: results discarded.')
 
@@ -268,10 +284,10 @@ if __name__=='__main__':
      ax1.hist(durations,color='c')
      ax1.set_xlabel(f'Time to peak (days): CV={get_cv(durations):.2}')
      
-     ax2 = plt.subplot(222)
-     ax2.hist(mortalities,color='c')
-     ax2.set_xlabel(f'Deaths: CV={get_cv(mortalities):.2}')
-     ax2.set_xticks(get_ticks(mortalities))
+     #ax2 = plt.subplot(222)
+     #ax2.hist(mortalities,color='c')
+     #ax2.set_xlabel(f'Deaths: CV={get_cv(mortalities):.2}')
+     #ax2.set_xticks(get_ticks(mortalities))
      
      ax3 = plt.subplot(223)
      ax3.hist(peaks,color='c')
@@ -286,6 +302,5 @@ if __name__=='__main__':
      plt.savefig(os.path.join(args.out, args.plot))   
      
 #    decide whether to display
-#    We will always display if --details specified
-     if args.show or args.details:
+     if args.show:
           plt.show()

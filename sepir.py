@@ -25,7 +25,7 @@ import numpy as np,  matplotlib.pyplot as plt, os
 from scipy.integrate import solve_ivp
 from enum import Enum
 
-class Indices(Enum):
+class Indices(Enum): 
     SUSCEPTIBLE         = 0
     EXPOSED             = 1
     PRE_SYMPTOMATIC     = 2
@@ -33,7 +33,17 @@ class Indices(Enum):
     INFECTIOUS_TESTED   = 4
     RECOVERED_UNTESTED  = 5
     RECOVERED_TESTED    = 6
-    
+
+names = [
+    'S (Susceptible)',
+    'E (Exposed)',
+    'P (Presymptomatic)',
+    'I0 (Infectious, untested',
+    'I1 (Infectious, untested)',
+    'R0 (Recovered, untested)',
+    'R0 (Recovered, tested)'
+]   
+
 # dy
 #
 # Compute derivative of state vector
