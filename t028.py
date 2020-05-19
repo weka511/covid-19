@@ -33,6 +33,9 @@ def create_NPIs(start=150, R0=2.5, lower_bound=0.9, upper_bound=1.0, dt=5):
           t += random.randint(1,dt)
      return NPIs
 
+# find_start
+#
+# Epidemic starts when a specified number of infections have been observed.
 
 def find_start(t0,t1,y,
            R0      = 2.5,      # Basic Reproduction number
@@ -49,10 +52,15 @@ def find_start(t0,t1,y,
            trigger = None,
            atol    = 1e-7,
            rtol    = 1e-7):    # Maximum absolute error tolerance for ODE solver
+     # triggered
+     #
+     # This event occurs when we the specified number of events is first observed.
+     
      def triggered(t,y,*rest):
           return N*(y[sepir.Indices.INFECTIOUS_TESTED.value]+y[sepir.Indices.INFECTIOUS_UNTESTED.value])-trigger
      triggered.terminal = True
      triggered.direction = +1
+     
      sol=solve_ivp(sepir.dy, 
                    (t0,t1),
                    y,
