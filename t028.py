@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
+# This program was written to replicate Transmission T-028: Sidney Redner on exponential growth processes,
+# https://santafe.edu/news-center/news/transmission-t-028-sidney-redner-exponential-growth-processes
+
 import sepir, matplotlib.pyplot as plt, random, numpy as np, argparse, os, math
 from scipy.integrate import solve_ivp
 
@@ -54,7 +57,7 @@ def find_start(t0,t1,y,
            rtol    = 1e-7):    # Maximum absolute error tolerance for ODE solver
      # triggered
      #
-     # This event occurs when we the specified number of events is first observed.
+     # This event occurs when the specified number of events is first observed.
      
      def triggered(t,y,*rest):
           return N*(y[sepir.Indices.INFECTIOUS_TESTED.value]+y[sepir.Indices.INFECTIOUS_UNTESTED.value])-trigger
@@ -72,6 +75,7 @@ def find_start(t0,t1,y,
                    rtol=rtol)
  
      return math.ceil(sol.t_events[0])
+
 # evolve
 #
 # Evolve the state forward for a fixed time interval using fixed R0
@@ -163,6 +167,7 @@ def evolveR0(R0      = 2.5,      # Initial value of Basic Reproduction number
                              atol    = atol,
                              rtol    = rtol))
           R0s.append(R0)
+          
      # Now we are at the end of NPEs, keep going with final R0     
      t0 = t1
      t1 = t_range[1]
@@ -297,7 +302,7 @@ def monte_carlo(args,start):
                if infections[-1]<0:
                     print (f'Negative value {infections[-1]} in step {i}')
                     plot_details(sols,plot=f'infections{i}.png')
-        #         We want to know when the infection peaks          
+     #         We want to know when the infection peaks          
                ys    = [y for sol in sols for y in sepir.scale(sepir.aggregate(sol.y,
                                                                                selector=[sepir.Indices.INFECTIOUS_UNTESTED.value,
                                                                                          sepir.Indices.INFECTIOUS_TESTED.value]),
@@ -343,10 +348,11 @@ def plot_results(durations,  peaks,  infections,args):
      
 if __name__=='__main__':
       
-     args=parse_args()
+     args = parse_args()
      random.seed(args.seed)
      start = args.start if args.trigger==None else \
-          find_start(0,args.end,
+          find_start(0,
+                     args.end,
                      sepir.get_initial_y(initial=args.initial,N=args.N),
                      R0      = args.R0,
                      N       = args.N,
