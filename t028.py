@@ -332,7 +332,7 @@ if __name__=='__main__':
                     print (f'Negative  peak {ys[ipeak]} in step {i}')
                     plot_details(sols,plot=f'peak{i}.png',indices=[3,4]) 
                     
-               durations.append(ts[ipeak])
+               durations.append(ts[ipeak]-start)
                    
                if args.details!=None:
                     plot_details(sols,out=args.out,plot=f'details{i}.png',indices=args.details)
