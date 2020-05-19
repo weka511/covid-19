@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
-import sepir, matplotlib.pyplot as plt, random, numpy as np, argparse, os
+import sepir, matplotlib.pyplot as plt, random, numpy as np, argparse, os, math
 from scipy.integrate import solve_ivp
 
 # create_NPIs
@@ -33,6 +33,37 @@ def create_NPIs(start=150, R0=2.5, lower_bound=0.9, upper_bound=1.0, dt=5):
           t += random.randint(1,dt)
      return NPIs
 
+
+def find_start(t0,t1,y,
+           R0      = 2.5,      # Basic Reproduction number
+           N       = 5000000,  # Population size
+           c       = 0.1,      # Testing rate for symptomatic cases, per diem
+           alpha   = 0.25,     # E to P transition rate, per diem 
+           gamma   = 0.1,      # I to R transition, per diem
+           delta   = 1,        # P to I, per diem
+           epsilon = 0.15,     # relative infectiousness
+           CFR1    = 2.0/100,  # case fatality rate for cases exceedinging ICU max 
+           CFR0    = 1.0/100,  # case fatality rate for cases under ICU max
+           nICU    = 300,      # number of ICU beds
+           pICU    = 1.25/100, # proportion of cases requiring ICU
+           trigger = None,
+           atol    = 1e-7,
+           rtol    = 1e-7):    # Maximum absolute error tolerance for ODE solver
+     def triggered(t,y,*rest):
+          return N*(y[sepir.Indices.INFECTIOUS_TESTED.value]+y[sepir.Indices.INFECTIOUS_UNTESTED.value])-trigger
+     triggered.terminal = True
+     triggered.direction = +1
+     sol=solve_ivp(sepir.dy, 
+                   (t0,t1),
+                   y,
+                   args=(N, c, alpha,
+                         sepir.get_beta(R0=R0,gamma=gamma,delta=delta,epsilon=epsilon),
+                         gamma, delta, epsilon, CFR1, CFR0, nICU, pICU),
+                   events=None if trigger == None else triggered,
+                   atol=atol,
+                   rtol=rtol)
+ 
+     return math.ceil(sol.t_events[0])
 # evolve
 #
 # Evolve the state forward for a fixed time interval using fixed R0
@@ -49,8 +80,10 @@ def evolve(t0,t1,y,
            CFR0    = 1.0/100,  # case fatality rate for cases under ICU max
            nICU    = 300,      # number of ICU beds
            pICU    = 1.25/100, # proportion of cases requiring ICU
+           trigger = None,
            atol    = 1e-7,
            rtol    = 1e-7):    # Maximum absolute error tolerance for ODE solver
+
      return solve_ivp(sepir.dy, 
                      (t0,t1),
                      y,
@@ -59,6 +92,7 @@ def evolve(t0,t1,y,
                            gamma, delta, epsilon, CFR1, CFR0, nICU, pICU),
                      atol=atol,
                      rtol=rtol)
+
 
 # change_R0
 #
@@ -204,7 +238,11 @@ def parse_args():
      parser.add_argument('--atol',      type=float, default=1e-9,      help='Absolute tolerance for ode solver')
      parser.add_argument('--rtol',      type=float, default=1e-9,      help='relative tolerance for ode solver')
      parser.add_argument('--details',   type=int,   default=None,      help='Produce detailed plots for debugging', nargs='+')
+     parser.add_argument('--trigger',   type=int,   default=None,      help='Trigger epidemic if number of infections exceeds this value')
      return parser.parse_args()
+
+def get_initial_y(initial=1,N=1000):
+     return [1-initial/N, initial/N, 0, 0, 0, 0, 0]
 
 if __name__=='__main__':
       
@@ -212,6 +250,25 @@ if __name__=='__main__':
 #    Monte Carlo simulation
 
      random.seed(args.seed)
+     
+     start = args.start if args.trigger==None else \
+          find_start(0,args.end,
+                     get_initial_y(initial=args.initial,N=args.N),
+                     R0      = args.R0,
+                     N       = args.N,
+                     c       = args.c, 
+                     alpha   = args.alpha,   
+                     gamma   = args.gamma,
+                     delta   = args.delta,
+                     epsilon = args.epsilon,
+                     CFR1    = args.CFR1,  
+                     CFR0    = args.CFR0,  
+                     nICU    = args.nICU,   
+                     pICU    = args.pICU,
+                     trigger = args.trigger,
+                     atol    = args.atol,
+                     rtol    = args.rtol )
+          
      durations   = []
      peaks       = []
      infections  = []
@@ -220,7 +277,7 @@ if __name__=='__main__':
           sols,R0s=change_R0(t_range =(0,args.end),
                              R0      = args.R0,
                              NPIs    = create_NPIs(R0          = args.R0,
-                                                   start       = args.start,
+                                                   start       = start,
                                                    lower_bound = 2*args.average-1,
                                                    upper_bound = 1,
                                                    dt          = 2*args.dt),
