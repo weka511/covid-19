@@ -102,10 +102,10 @@ def evolve(t0,t1,y,
                      rtol=rtol)
 
 
-# change_R0
+# evolveR0
 #
 # Evolve the state forward for a fixed time interval varying R0 by applying a series of NPIs 
-def change_R0(R0      = 2.5,      # Initial value of Basic Reproduction number
+def evolveR0(R0      = 2.5,      # Initial value of Basic Reproduction number
               t_range = (0,400),  # Range of times (days)
               NPIs    = [],       # List od reductions to apply to R0 [(t1,f1),(t2,f2),...]
                                   # Apply factor f1 at time t1, etc.
@@ -127,7 +127,7 @@ def change_R0(R0      = 2.5,      # Initial value of Basic Reproduction number
      t0 = t_range[0]
      t1 = NPIs[0][0]
      sols = [evolve(t0,t1,
-                    [1-initial/N, initial/N, 0, 0, 0, 0, 0],
+                    sepir.get_initial_y(initial=initial,N=N),
                     R0      = R0,
                     N       = N, 
                     c       = c, 
@@ -249,40 +249,17 @@ def parse_args():
      parser.add_argument('--trigger',   type=int,   default=None,      help='Trigger epidemic if number of infections exceeds this value')
      return parser.parse_args()
 
-def get_initial_y(initial=1,N=1000):
-     return [1-initial/N, initial/N, 0, 0, 0, 0, 0]
+# monte_carlo
+#
+# Perform Monte-Carlo simulation
 
-if __name__=='__main__':
-      
-     args=parse_args()
-#    Monte Carlo simulation
-
-     random.seed(args.seed)
-     
-     start = args.start if args.trigger==None else \
-          find_start(0,args.end,
-                     get_initial_y(initial=args.initial,N=args.N),
-                     R0      = args.R0,
-                     N       = args.N,
-                     c       = args.c, 
-                     alpha   = args.alpha,   
-                     gamma   = args.gamma,
-                     delta   = args.delta,
-                     epsilon = args.epsilon,
-                     CFR1    = args.CFR1,  
-                     CFR0    = args.CFR0,  
-                     nICU    = args.nICU,   
-                     pICU    = args.pICU,
-                     trigger = args.trigger,
-                     atol    = args.atol,
-                     rtol    = args.rtol )
-          
+def monte_carlo(args,start):     
      durations   = []
      peaks       = []
      infections  = []
          
      for i in range(args.M):
-          sols,R0s=change_R0(t_range =(0,args.end),
+          sols,R0s=evolveR0(t_range =(0,args.end),
                              R0      = args.R0,
                              NPIs    = create_NPIs(R0          = args.R0,
                                                    start       = start,
@@ -339,8 +316,12 @@ if __name__=='__main__':
           else:
                print (f'Final population of simulation {i} outside tolerance {args.tolerance}: results discarded.')
 
-#    Plot results
+     return ( durations,  peaks,  infections)
 
+# plot_results
+#
+# Plot accumuldated statistics
+def plot_results(durations,  peaks,  infections,args):
      fig = plt.figure(figsize=(20,6))
      fig.suptitle(f'Duration and Infections: M={args.M}, average={args.average}')
      
@@ -359,6 +340,32 @@ if __name__=='__main__':
      ax3.set_xticks(get_ticks(infections))     
      
      plt.savefig(os.path.join(args.out, args.plot))   
+     
+if __name__=='__main__':
+      
+     args=parse_args()
+     random.seed(args.seed)
+     start = args.start if args.trigger==None else \
+          find_start(0,args.end,
+                     sepir.get_initial_y(initial=args.initial,N=args.N),
+                     R0      = args.R0,
+                     N       = args.N,
+                     c       = args.c, 
+                     alpha   = args.alpha,   
+                     gamma   = args.gamma,
+                     delta   = args.delta,
+                     epsilon = args.epsilon,
+                     CFR1    = args.CFR1,  
+                     CFR0    = args.CFR0,  
+                     nICU    = args.nICU,   
+                     pICU    = args.pICU,
+                     trigger = args.trigger,
+                     atol    = args.atol,
+                     rtol    = args.rtol )
+
+     durations,  peaks,  infections = monte_carlo(args,start)
+
+     plot_results(durations,  peaks,  infections,args)
      
 #    decide whether to display
      if args.show:

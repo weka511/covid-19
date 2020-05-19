@@ -166,6 +166,13 @@ def plot_infections(infections,control_days=400,out='./'):
 def get_beta(R0=2.5,gamma=0.1,delta=1.0,epsilon=0.15):
     return R0/(epsilon/delta + 1/gamma)
 
+# get_initial_y
+#
+# Initialize population: mostly susceptible, a few explosed, and everone else zero
+
+def get_initial_y(initial=1,N=1000):
+    return [1-initial/N, initial/N, 0, 0, 0, 0, 0]
+
 if __name__=='__main__':
     import argparse
     
