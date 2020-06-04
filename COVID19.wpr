@@ -28,7 +28,7 @@ proj.launch-config = {loc('NZ-model.py'): ('project',
                       loc('t028.py'): ('project',
                                        (u'--M 10 --end 800 --trigger 100  --tolerance 1e-3 --show',
         '')),
-                      loc('unknown:<untitled> #1'): ('project',
+                      loc('unknown:<untitled> #66'): ('project',
         (u'intervene',
          ''))}
 [user attributes]
@@ -92,17 +92,17 @@ debug.recent-run-args = {loc('NZ-model.py'): [u'--Rc 2.5 2.3 2 1.75 1.2 0.75 --s
         u'--M 10 --show --start 120',
         u'--M 10 --show --start 100',
         u'--M 10 --show  --tolerance 1e-9'],
-                         loc('unknown:<untitled> #2'): [u'intervene']}
+                         loc('unknown:<untitled> #67'): [u'intervene']}
 edit.multi-select-popup-size = (245,
                                 102)
 guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                             'windows': [{'name': 'zRuoo7lo1K5bGtfhUhOsW4cZwV'\
         '1Zxhqw',
-        'size-state': 'maximized',
+        'size-state': '',
         'type': 'dock',
         'view': {'area': 'tall',
                  'constraint': None,
-                 'current_pages': [3],
+                 'current_pages': [0],
                  'full-screen': False,
                  'notebook_display': 'normal',
                  'notebook_percent': 0.25,
@@ -113,7 +113,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                                {'tree-state': {'file-sort-method': 'by name',
         'list-files-first': False,
         'tree-states': {'deep': {'expanded-nodes': [],
-                                 'selected-nodes': [(3,)],
+                                 'selected-nodes': [(0,)],
                                  'top-node': (0,)}},
         'tree-style': 'deep'}}),
                               ('source-assistant',
@@ -127,51 +127,51 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                               ('browser',
                                'tall',
                                0,
-                               {'all_tree_states': {loc('../Anaconda3/Lib/enum.py'): {'e'\
+                               {'all_tree_states': {loc('../anaconda3/Lib/enum.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('class def',
-                      loc('../Anaconda3/Lib/enum.py'),
+                      loc('../anaconda3/Lib/enum.py'),
                       'auto')]},
-        loc('../Anaconda3/Lib/site-packages/matplotlib/artist.py'): {'expand'\
+        loc('../anaconda3/Lib/site-packages/matplotlib/artist.py'): {'expand'\
         'ed-nodes': [],
         'selected-nodes': [],
         'top-node': [('function def',
-                      loc('../Anaconda3/Lib/site-packages/matplotlib/artist.py'),
+                      loc('../anaconda3/Lib/site-packages/matplotlib/artist.py'),
                       'allow_rasterization')]},
-        loc('../Anaconda3/Lib/site-packages/matplotlib/axes/_base.py'): {'ex'\
+        loc('../anaconda3/Lib/site-packages/matplotlib/axes/_base.py'): {'ex'\
         'panded-nodes': [],
         'selected-nodes': [[('class def',
-                             loc('../Anaconda3/Lib/site-packages/matplotlib/axes/_base.py'),
+                             loc('../anaconda3/Lib/site-packages/matplotlib/axes/_base.py'),
                              '_process_plot_var_args')]],
         'top-node': [('class def',
-                      loc('../Anaconda3/Lib/site-packages/matplotlib/axes/_base.py'),
+                      loc('../anaconda3/Lib/site-packages/matplotlib/axes/_base.py'),
                       '_AxesBase')]},
-        loc('../Anaconda3/Lib/site-packages/numpy/core/fromnumeric.py'): {'e'\
+        loc('../anaconda3/Lib/site-packages/numpy/core/fromnumeric.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('function def',
-                      loc('../Anaconda3/Lib/site-packages/numpy/core/fromnumeric.py'),
+                      loc('../anaconda3/Lib/site-packages/numpy/core/fromnumeric.py'),
                       'alen')]},
-        loc('../Anaconda3/Lib/site-packages/scipy/integrate/_ivp/base.py'): {'e'\
+        loc('../anaconda3/Lib/site-packages/scipy/integrate/_ivp/base.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('function def',
-                      loc('../Anaconda3/Lib/site-packages/scipy/integrate/_ivp/base.py'),
+                      loc('../anaconda3/Lib/site-packages/scipy/integrate/_ivp/base.py'),
                       'check_arguments')]},
-        loc('../Anaconda3/Lib/site-packages/scipy/integrate/_ivp/ivp.py'): {'e'\
+        loc('../anaconda3/Lib/site-packages/scipy/integrate/_ivp/ivp.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('function def',
-                      loc('../Anaconda3/Lib/site-packages/scipy/integrate/_ivp/ivp.py'),
+                      loc('../anaconda3/Lib/site-packages/scipy/integrate/_ivp/ivp.py'),
                       'find_active_events')]},
-        loc('../Anaconda3/Lib/site-packages/scipy/optimize/optimize.py'): {'e'\
+        loc('../anaconda3/Lib/site-packages/scipy/optimize/optimize.py'): {'e'\
         'xpanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('function def',
-                      loc('../Anaconda3/Lib/site-packages/scipy/optimize/optimize.py'),
+                      loc('../anaconda3/Lib/site-packages/scipy/optimize/optimize.py'),
                       'approx_fhess_p')]},
-        loc('../Anaconda3/Lib/types.py'): {'expanded-nodes': [],
+        loc('../anaconda3/Lib/types.py'): {'expanded-nodes': [],
         'selected-nodes': [],
         'top-node': [('class def',
                       loc('../../../Program Files (x86)/Wing Personal 7.2/resources/typeshed/stdlib/3/types.pyi'),
@@ -307,12 +307,19 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
         'top-node': [('class def',
                       loc('../dynamics/trafficLights.py'),
                       'CAR')]},
-        loc('unknown:<untitled> #3'): {'expanded-nodes': [],
-                                       'selected-nodes': [None],
-                                       'top-node': None},
-        loc('unknown:<untitled> #4'): {'expanded-nodes': [],
-                                       'selected-nodes': [],
-                                       'top-node': None}},
+        loc('../untitled-1.py'): {'expanded-nodes': [],
+                                  'selected-nodes': [[('generic attribute',
+        loc('../untitled-1.py'),
+        'parameters')]],
+                                  'top-node': [('generic attribute',
+        loc('../untitled-1.py'),
+        'alphas')]},
+        loc('unknown:<untitled> #69'): {'expanded-nodes': [],
+        'selected-nodes': [None],
+        'top-node': None},
+        loc('unknown:<untitled> #68'): {'expanded-nodes': [],
+        'selected-nodes': [],
+        'top-node': None}},
                                 'browse_mode': u'Current Module',
                                 'follow-selection': False,
                                 'sort_mode': 'Alphabetically',
@@ -343,9 +350,9 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                                        'fMatchCase': False,
                                        'fOmitBinary': True,
                                        'fRegexFlags': 42,
-                                       'fReplaceText': u'',
+                                       'fReplaceText': '',
                                        'fReverse': False,
-                                       'fSearchText': u'',
+                                       'fSearchText': '',
                                        'fStartPos': 0,
                                        'fStyle': 'text',
                                        'fWholeWords': False,
@@ -414,10 +421,10 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                        'folded-linenos': [],
                        'history': {},
                        'launch-id': None,
-                       'sel-line': 2L,
-                       'sel-line-start': 145L,
-                       'selection_end': 145L,
-                       'selection_start': 145L,
+                       'sel-line': 0L,
+                       'sel-line-start': 0L,
+                       'selection_end': 0L,
+                       'selection_start': 0L,
                        'zoom': 0L}),
                      ('messages',
                       'wide',
@@ -428,43 +435,19 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                       1,
                       {})],
         'primary_view_state': {'editor_states': ({'bookmarks': ([[loc('t028.py'),
-        {'attrib-starts': [],
-         'code-line': '          sols,R0s=change_R0(t_range =(0,args.end),\r'\
-                      '\n',
-         'first-line': 202L,
+        {'attrib-starts': [('evolve|0|',
+                            39),
+                           ('evolve|0|.triggered|0|',
+                            54)],
+         'code-line': '          return \r\n',
+         'first-line': 47L,
          'folded-linenos': [],
-         'sel-line': 220L,
-         'sel-line-start': 10878L,
-         'selection_end': 10906L,
-         'selection_start': 10897L,
+         'sel-line': 55L,
+         'sel-line-start': 2280L,
+         'selection_end': 2297L,
+         'selection_start': 2297L,
          'zoom': 0L},
-        1589844364.528],
-        [loc('t028.py'),
-         {'attrib-starts': [('change_R0|0|',
-                             65)],
-          'code-line': '     sols = [evolve(t0,t1,\r\n',
-          'first-line': 82L,
-          'folded-linenos': [],
-          'sel-line': 87L,
-          'sel-line-start': 4016L,
-          'selection_end': 4035L,
-          'selection_start': 4029L,
-          'zoom': 0L},
-         1589844396.189],
-        [loc('t028.py'),
-         {'attrib-starts': [('evolve|0|',
-                             39),
-                            ('evolve|0|.triggered|0|',
-                             54)],
-          'code-line': '          return \r\n',
-          'first-line': 47L,
-          'folded-linenos': [],
-          'sel-line': 55L,
-          'sel-line-start': 2280L,
-          'selection_end': 2297L,
-          'selection_start': 2297L,
-          'zoom': 0L},
-         1589844589.379],
+        1589844589.379],
         [loc('sepir.py'),
          {'attrib-starts': [('Indices|0|',
                              27)],
@@ -514,7 +497,7 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
           'selection_start': 2872L,
           'zoom': 0L},
          1589844834.523],
-        [loc('../Anaconda3/Lib/site-packages/scipy/integrate/_ivp/ivp.py'),
+        [loc('../anaconda3/Lib/site-packages/scipy/integrate/_ivp/ivp.py'),
          {'attrib-starts': [('solve_ivp|0|',
                              156)],
           'code-line': '            events = [lambda t, x, event=event: even'\
@@ -669,7 +652,31 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
           'selection_end': 30L,
           'selection_start': 30L,
           'zoom': 0L},
-         1589912280.824]],
+         1589912280.824],
+        [loc('t028.py'),
+         {'attrib-starts': [('get_cv|0|',
+                             210)],
+          'code-line': 'def get_cv(y):\r\n',
+          'first-line': 62L,
+          'folded-linenos': [],
+          'sel-line': 210L,
+          'sel-line-start': 8699L,
+          'selection_end': 8709L,
+          'selection_start': 8703L,
+          'zoom': 0L},
+         1591091269.174],
+        [loc('../untitled-1.py'),
+         {'attrib-starts': [],
+          'code-line': '        # Parameters of the Multinomial are from a D'\
+                       'irichlet\r\n',
+          'first-line': 6L,
+          'folded-linenos': [],
+          'sel-line': 11L,
+          'sel-line-start': 225L,
+          'selection_end': 235L,
+          'selection_start': 235L,
+          'zoom': 0L},
+         1591253575.617]],
         20),
         'current-loc': loc('t028.py'),
         'editor-state-list': [(loc('sepir.py'),
@@ -712,16 +719,15 @@ guimgr.overall-gui-state = {'windowing-policy': 'combined-window',
                  'splits': 1,
                  'tab_location': 'left',
                  'traversal_pos': ((0,
-                                    3),
-                                   1589831410.545),
+                                    0),
+                                   1591142282.091),
                  'user_data': {}},
-        'window-alloc': (0,
-                         0,
+        'window-alloc': (-12,
+                         3,
                          1378,
                          749)}]}
-guimgr.recent-documents = [loc('t028.py'),
-                           loc('sepir.py')]
-guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [('_'\
+guimgr.recent-documents = [loc('t028.py')]
+guimgr.visual-state = {loc('../anaconda3/Lib/argparse.py'): {'attrib-starts': [('_'\
         'ActionsContainer|0|',
         1238),
         ('_ActionsContainer|0|.add_argument|0|',
@@ -734,7 +740,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 47598L,
         'selection_start': 47598L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/encodings/ascii.py'): {'attrib-'\
+                       loc('../anaconda3/Lib/encodings/ascii.py'): {'attrib-'\
         'starts': [('IncrementalDecoder|0|',
                     23),
                    ('IncrementalDecoder|0|.decode|0|',
@@ -748,7 +754,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 633L,
         'selection_start': 633L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/encodings/cp1252.py'): {'attrib'\
+                       loc('../anaconda3/Lib/encodings/cp1252.py'): {'attrib'\
         '-starts': [('IncrementalDecoder|0|',
                      20),
                     ('IncrementalDecoder|0|.decode|0|',
@@ -762,7 +768,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 674L,
         'selection_start': 674L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/encodings/utf_16.py'): {'attrib'\
+                       loc('../anaconda3/Lib/encodings/utf_16.py'): {'attrib'\
         '-starts': [('IncrementalDecoder|0|',
                      52),
                     ('IncrementalDecoder|0|._buffer_decode|0|',
@@ -776,7 +782,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 2104L,
         'selection_start': 2104L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/enum.py'): {'attrib-starts': [('E'\
+                       loc('../anaconda3/Lib/enum.py'): {'attrib-starts': [('E'\
         'numMeta|0|',
         122),
         ('EnumMeta|0|.__getattr__|0|',
@@ -789,7 +795,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 14195L,
         'selection_start': 14195L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/genericpath.py'): {'attrib-star'\
+                       loc('../anaconda3/Lib/genericpath.py'): {'attrib-star'\
         'ts': [('getmtime|0|',
                 52)],
         'code-line': '    return os.stat(filename).st_mtime\n',
@@ -800,7 +806,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 1508L,
         'selection_start': 1508L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/json/__init__.py'): {'attrib-st'\
+                       loc('../anaconda3/Lib/json/__init__.py'): {'attrib-st'\
         'arts': [('load|0|',
                   273)],
         'code-line': '    return loads(fp.read(),\n',
@@ -811,7 +817,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 10914L,
         'selection_start': 10914L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/json/decoder.py'): {'attrib-sta'\
+                       loc('../anaconda3/Lib/json/decoder.py'): {'attrib-sta'\
         'rts': [('JSONDecoder|0|',
                  253),
                 ('JSONDecoder|0|.raw_decode|0|',
@@ -825,7 +831,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 12371L,
         'selection_start': 12371L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/matplotlib/artist.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/matplotlib/artist.py'): {'a'\
         'ttrib-starts': [('Artist|0|',
                           56),
                          ('Artist|0|.update|0|',
@@ -841,7 +847,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 30826L,
         'selection_start': 30826L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/matplotlib/axes/_base.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/matplotlib/axes/_base.py'): {'a'\
         'ttrib-starts': [('_process_plot_var_args|0|',
                           117),
                          ('_process_plot_var_args|0|._xy_from_xy|0|',
@@ -855,7 +861,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 10054L,
         'selection_start': 10054L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/matplotlib/backend_bases.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/matplotlib/backend_bases.py'): {'a'\
         'ttrib-starts': [('_Backend|0|',
                           3221),
                          ('_Backend|0|.new_figure_manager|0|',
@@ -868,7 +874,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 111833L,
         'selection_start': 111833L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/matplotlib/font_manager.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/matplotlib/font_manager.py'): {'a'\
         'ttrib-starts': [('json_load|0|',
                           915)],
         'code-line': "    with open(filename, 'r') as fh:\n",
@@ -879,7 +885,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 29969L,
         'selection_start': 29969L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/numpy/core/fromnumeric.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/numpy/core/fromnumeric.py'): {'a'\
         'ttrib-starts': [('_wrapit|0|',
                           41)],
         'code-line': '    result = getattr(asarray(obj), method)(*args, **kw'\
@@ -891,7 +897,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 1331L,
         'selection_start': 1331L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/__init__.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/__init__.py'): {'a'\
         'ttrib-starts': [('__getattr__|0|',
                           194)],
         'code-line': "        raise AttributeError(f\"module 'pandas' has no"\
@@ -903,7 +909,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 5835L,
         'selection_start': 5835L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/core/algorithms.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/core/algorithms.py'): {'a'\
         'ttrib-starts': [('take_nd|0|',
                           -1)],
         'code-line': '            out = np.empty(out_shape, dtype=dtype)\n',
@@ -914,7 +920,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 52099L,
         'selection_start': 52099L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/core/frame.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/core/frame.py'): {'a'\
         'ttrib-starts': [('DataFrame|0|',
                           318),
                          ('DataFrame|0|.set_index|0|',
@@ -928,7 +934,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 150688L,
         'selection_start': 150688L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/core/generic.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/core/generic.py'): {'a'\
         'ttrib-starts': [('NDFrame|0|',
                           150),
                          ('NDFrame|0|.__getattr__|0|',
@@ -942,7 +948,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 176292L,
         'selection_start': 176292L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/core/indexes/base.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/core/indexes/base.py'): {'a'\
         'ttrib-starts': [('Index|0|',
                           176),
                          ('Index|0|.drop|0|',
@@ -956,7 +962,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 164092L,
         'selection_start': 164092L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/core/indexing.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/core/indexing.py'): {'a'\
         'ttrib-starts': [('_NDFrameIndexer|0|',
                           568),
                          ('_NDFrameIndexer|0|._has_valid_tuple|0|',
@@ -970,7 +976,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 21381L,
         'selection_start': 21381L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/core/internals/construction.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/core/internals/construction.py'): {'a'\
         'ttrib-starts': [('extract_index|0|',
                           330)],
         'code-line': '                raise ValueError("arrays must all be s'\
@@ -982,7 +988,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 11684L,
         'selection_start': 11684L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/core/internals/managers.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/core/internals/managers.py'): {'a'\
         'ttrib-starts': [('construction_error|0|',
                           1677)],
         'code-line': '    raise ValueError(f"Shape of passed values is {pass'\
@@ -994,7 +1000,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 53405L,
         'selection_start': 53405L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/pandas/core/series.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/pandas/core/series.py'): {'a'\
         'ttrib-starts': [('Series|0|',
                           121),
                          ('Series|0|.apply|0|',
@@ -1009,7 +1015,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 119962L,
         'selection_start': 119962L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/scipy/integrate/_ivp/base.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/scipy/integrate/_ivp/base.py'): {'a'\
         'ttrib-starts': [('check_arguments|0|',
                           4)],
         'code-line': '        raise ValueError("`y0` must be 1-dimensional."'\
@@ -1021,7 +1027,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 582L,
         'selection_start': 582L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/scipy/integrate/_ivp/ivp.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/scipy/integrate/_ivp/ivp.py'): {'a'\
         'ttrib-starts': [('solve_ivp|0|',
                           156)],
         'code-line': '            events = [lambda t, x, event=event: event('\
@@ -1033,7 +1039,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 24480L,
         'selection_start': 24480L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/scipy/integrate/odepack.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/scipy/integrate/odepack.py'): {'a'\
         'ttrib-starts': [('odeint|0|',
                           28)],
         'code-line': '                             int(bool(tfirst)))\n',
@@ -1044,7 +1050,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 10319L,
         'selection_start': 10319L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/site-packages/scipy/optimize/optimize.py'): {'a'\
+                       loc('../anaconda3/Lib/site-packages/scipy/optimize/optimize.py'): {'a'\
         'ttrib-starts': [('OptimizeResult|0|',
                           76),
                          ('OptimizeResult|0|.__getattr__|0|',
@@ -1057,7 +1063,7 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'selection_end': 4089L,
         'selection_start': 4089L,
         'zoom': 0L},
-                       loc('../Anaconda3/Lib/types.py'): {'attrib-starts': [('D'\
+                       loc('../anaconda3/Lib/types.py'): {'attrib-starts': [('D'\
         'ynamicClassAttribute|0|',
         141),
         ('DynamicClassAttribute|0|.__get__|0|',
@@ -1316,13 +1322,21 @@ guimgr.visual-state = {loc('../Anaconda3/Lib/argparse.py'): {'attrib-starts': [(
         'sel-line-start': 1270L,
         'selection_end': 1277L,
         'selection_start': 1277L,
+        'zoom': 0L},
+                       loc('../untitled-1.py'): {'attrib-starts': [],
+        'code-line': '        # Parameters of the Multinomial are from a Dir'\
+                     'ichlet\r\n',
+        'first-line': 6L,
+        'folded-linenos': [],
+        'sel-line': 11L,
+        'sel-line-start': 225L,
+        'selection_end': 235L,
+        'selection_start': 235L,
         'zoom': 0L}}
 proj.build-cmd = {None: ('default',
                          None)}
 proj.env-vars = {None: ('default',
                         [u''])}
-proj.pyexec = {None: ('custom',
-                      u'/Users/Simon/Anaconda3/Scripts/wrap_anaconda.bat')}
 search.replace-history = [u'initial',
                           u'frequencies',
                           u'R_uncontrolled',
